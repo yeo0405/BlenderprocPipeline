@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6D Object Detection - Training Data Generation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px 30px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+            margin-right: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .status-message.error {
+            background: #fee;
+            color: #c00;
+            border-left: 4px solid #c00;
+            display: block;
+        }
+
+        .status-message.success {
+            background: #efe;
+            color: #060;
+            border-left: 4px solid #060;
+            display: block;
+        }
+
+        .status-message.info {
+            background: #eef;
+            color: #006;
+            border-left: 4px solid #006;
+            display: block;
+        }
+
+        .status-message.warning {
+            background: #ffd;
+            color: #660;
+            border-left: 4px solid #cc0;
+            display: block;
+        }
+
+        .info-box {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .info-box code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #333;
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .config-item:last-child {
+            border-bottom: none;
+        }
+
+        .config-label {
+            color: #555;
+            font-weight: 500;
+        }
+
+        .config-value {
+            color: #999;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+
+        .file-list {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .file-list li {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-list li:last-child {
+            border-bottom: none;
+        }
+
+        .file-list li:before {
+            content: "";
+            margin-right: 8px;
+        }
+
+        .file-item-name {
+            flex: 1;
+            word-break: break-all;
+        }
+
+        .file-item-size {
+            color: #999;
+            margin-left: 10px;
+            font-size: 0.9em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 10px 0;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f9f9f9;
+        }
+
+        .file-upload-area:hover {
+            background: #f0f0f0;
+            border-color: #764ba2;
+        }
+
+        .file-upload-area p {
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Data Genration System</h1>
+            <p>Generate synthetic training data with BlenderProc</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+        <!-- Step 1 & 2 Merged: Dataset Creation with File Upload -->
+        <div class="section">
+            <h2>Step 1: Create Dataset & Upload Blend Models</h2>
+
+            <div class="form-group">
+                <label>Upload Blender Model Files</label>
+                <div class="file-upload-area" onclick="document.getElementById('blendFileInput').click()">
+                    <p>Click to upload Blender model files (*.blend)</p>
+                    <p style="font-size: 0.9em; color: #999;">or drag and drop files here</p>
+                </div>
+                <input type="file" id="blendFileInput" multiple accept=".blend" onchange="handleFileSelect(event, 'blend')">
+                <div id="blendFileList"></div>
+            </div>
+
+            <button class="btn-primary" onclick="createAndUploadDataset()">Create Dataset & Upload</button>
+            <div id="createUploadStatus" class="status-message"></div>
+
+            <div class="info-box">
+                <h3>Instructions</h3>
+                <p>1. Select one or more Blender model files (.blend)</p>
+                <p>2. Click "Create Dataset & Upload"</p>
+                <p style="margin-top: 10px; color: #667eea;"><strong>Note:</strong> <code>camera.json</code> and <code>test_targets_bop19.json</code> will be automatically copied from templates.</p>
+            </div>
+            </div>
+
+            <!-- Step 2: Training Data Generation -->
+            <div class="section full-width">
+                <h2>Step 2: Generate Training Data</h2>                <div class="grid-2col">
+                    <div class="form-group">
+                        <label for="numScenes">Number of Scenes</label>
+                        <input type="number" id="numScenes" value="10" min="1" max="10000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sampleSize">Camera Poses Per Scene</label>
+                        <input type="number" id="sampleSize" value="100" min="1" max="1000">
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="startGeneration()">Start Generation</button>
+                <div id="generationStatus" class="status-message"></div>
+
+                <div id="generationProgress" style="display: none;">
+                    <div id="jobStatus" style="margin-top: 20px; background: white; border-radius: 6px; padding: 15px; border-left: 4px solid #667eea;">
+                        <h4 style="margin-bottom: 10px; color: #667eea;">Job Information</h4>
+                        <div id="jobDetails"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div class="section">
+                <h2>System Information</h2>
+                <div id="systemInfo"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API base URL
+        const API_BASE = 'http://localhost:5000/api';
+        let currentJobId = null;
+        let jobCheckInterval = null;
+        let uploadedFiles = {
+            blend: []
+        };
+        let bopParentPath = null; // Will be set from backend
+        let currentDataset = 'hb'; // Fixed dataset
+        let expectedTotalScenes = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDefaultPaths();
+            loadSystemInfo();
+        });
+
+        // Load default paths
+        function loadDefaultPaths() {
+            fetch(`${API_BASE}/config/paths`)
+                .then(response => response.json())
+                .then(data => {
+                    bopParentPath = data.bop_parent_path;
+                })
+                .catch(error => console.error('Failed to load default paths:', error));
+        }
+
+        // Load system information
+        function loadSystemInfo() {
+            fetch(`${API_BASE}/health`)
+                .then(response => response.json())
+                .then(data => {
+                    const systemHtml = `
+                        <div class="config-item">
+                            <span class="config-label">Backend Status</span>
+                            <span class="config-value" style="color: #060;">✓ Online</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Server Time</span>
+                            <span class="config-value">${new Date(data.timestamp).toLocaleString()}</span>
+                        </div>
+                    `;
+                    document.getElementById('systemInfo').innerHTML = systemHtml;
+                })
+                .catch(error => {
+                    document.getElementById('systemInfo').innerHTML = `
+                        <div class="config-item">
+                            <span class="config-label">Backend Status</span>
+                            <span class="config-value" style="color: #c00;">✗ Offline</span>
+                        </div>
+                        <p style="color: #c00; margin-top: 10px;">⚠️ Please ensure backend is running: python3 ui/backend/app.py</p>
+                    `;
+                });
+        }
+
+        // Create dataset and upload files (merged Step 1 & 2)
+        function createAndUploadDataset() {
+            const datasetName = 'hb';
+
+            if (uploadedFiles.blend.length === 0) {
+                showMessage('createUploadStatus', 'Please select at least one .blend model file', 'error');
+                return;
+            }
+
+            showMessage('createUploadStatus', 'Creating dataset and uploading files...', 'info');
+
+            const formData = new FormData();
+            formData.append('dataset_name', datasetName);
+
+            uploadedFiles.blend.forEach((file) => {
+                formData.append('blend_files', file);
+            });
+
+            fetch(`${API_BASE}/datasets/create_and_upload`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentDataset = data.dataset_name;
+                    showMessage('createUploadStatus', `✓ Dataset created and files uploaded successfully!`, 'success');
+                    uploadedFiles.blend = [];
+                    document.getElementById('blendFileList').innerHTML = '';
+                    document.getElementById('blendFileInput').value = '';
+                } else {
+                    showMessage('createUploadStatus', `✗ Error: ${data.error}`, 'error');
+                }
+            })
+            .catch(error => {
+                showMessage('createUploadStatus', `Error: ${error.message}`, 'error');
+            });
+        }
+
+        // Handle file selection
+        function handleFileSelect(event, fileType) {
+            const files = event.target.files;
+            uploadedFiles[fileType] = Array.from(files);
+
+            // Display file list
+            const listElementId = 'blendFileList';
+            const listElement = document.getElementById(listElementId);
+            
+            if (uploadedFiles[fileType].length > 0) {
+                let fileHtml = '<ul class="file-list">';
+                uploadedFiles[fileType].forEach((file, index) => {
+                    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                    fileHtml += `
+                        <li>
+                            <span class="file-item-name">${file.name}</span>
+                            <span class="file-item-size">${sizeMB} MB</span>
+                        </li>
+                    `;
+                });
+                fileHtml += '</ul>';
+                if (listElement) listElement.innerHTML = fileHtml;
+            } else {
+                if (listElement) listElement.innerHTML = '';
+            }
+        }
+
+        // Validate dataset
+        function validateDataset() {
+            if (!currentDataset) {
+                showMessage('validateStatus', 'Please create a dataset first in Step 1', 'error');
+                return;
+            }
+
+            showMessage('validateStatus', 'Validating...', 'info');
+
+            fetch(`${API_BASE}/dataset/validate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    dataset_path: bopParentPath,
+                    dataset_name: currentDataset
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.valid) {
+                    showMessage('validateStatus', `✓ Dataset '${currentDataset}' validated successfully!`, 'success');
+                    displayValidationResult(data);
+                } else {
+                    let errorMsg = 'Validation failed:\n';
+                    for (let [key, value] of Object.entries(data.errors || {})) {
+                        errorMsg += `\n• ${key}: ${value}`;
+                    }
+                    showMessage('validateStatus', errorMsg, 'error');
+                }
+            })
+            .catch(error => {
+                showMessage('validateStatus', `Error: ${error.message}`, 'error');
+            });
+        }
+
+        // Display validation result
+        function displayValidationResult(data) {
+            const html = `
+                <div class="info-box" style="margin-top: 15px;">
+                    <h3>✓ Validation Result</h3>
+                    <div class="config-item">
+                        <span class="config-label">Dataset Name</span>
+                        <span class="config-value">${data.dataset_name}</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">Dataset Path</span>
+                        <span class="config-value">${data.dataset_path}</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('validationResult').innerHTML = html;
+        }
+
+        // Get models list
+        function getModels() {
+            if (!currentDataset) {
+                alert('Please create a dataset first in Step 1');
+                return;
+            }
+
+            fetch(`${API_BASE}/dataset/models`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    dataset_path: bopParentPath,
+                    dataset_name: currentDataset
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.models && data.models.length > 0) {
+                    const modelList = data.models.map(m => `<li>${m}</li>`).join('');
+                    document.getElementById('modelsList').innerHTML = `
+                        <p style="margin-bottom: 10px; color: #667eea;"><strong>Found ${data.count} models</strong></p>
+                        <ul class="file-list">${modelList}</ul>
+                    `;
+                } else {
+                    document.getElementById('modelsList').innerHTML = '<p style="color: #c00;">No models found</p>';
+                }
+                if (data.warnings) {
+                    document.getElementById('modelsList').innerHTML += `<p style="color: #cc0; margin-top: 10px;">⚠️ ${data.warnings}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('modelsList').innerHTML = `<p style="color: #c00;">Error: ${error.message}</p>`;
+            });
+        }
+
+        // Get camera configuration
+        function getCameraConfig() {
+            if (!currentDataset) {
+                alert('Please create a dataset first in Step 1');
+                return;
+            }
+
+            fetch(`${API_BASE}/dataset/camera`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    dataset_path: bopParentPath,
+                    dataset_name: currentDataset
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.camera_config) {
+                    const config = data.camera_config;
+                    const configHtml = `
+                        <div class="config-item">
+                            <span class="config-label">Focal Length (fx)</span>
+                            <span class="config-value">${config.fx || 'N/A'}</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Focal Length (fy)</span>
+                            <span class="config-value">${config.fy || 'N/A'}</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Principal Point (cx)</span>
+                            <span class="config-value">${config.cx || 'N/A'}</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Principal Point (cy)</span>
+                            <span class="config-value">${config.cy || 'N/A'}</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Image Width</span>
+                            <span class="config-value">${config.width || 'N/A'}</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Image Height</span>
+                            <span class="config-value">${config.height || 'N/A'}</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Depth Scale</span>
+                            <span class="config-value">${config.depth_scale || 'N/A'}</span>
+                        </div>
+                    `;
+                    document.getElementById('cameraConfig').innerHTML = configHtml;
+                } else {
+                    document.getElementById('cameraConfig').innerHTML = `<p style="color: #c00;">${data.error || 'Unable to load config'}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('cameraConfig').innerHTML = `<p style="color: #c00;">Error: ${error.message}</p>`;
+            });
+        }
+
+        // Get target configuration
+        function getTargetConfig() {
+            if (!currentDataset) {
+                alert('Please create a dataset first in Step 1');
+                return;
+            }
+
+            fetch(`${API_BASE}/dataset/targets`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    dataset_path: bopParentPath,
+                    dataset_name: currentDataset
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.target_count !== undefined) {
+                    const html = `
+                        <div class="config-item">
+                            <span class="config-label">Total Targets</span>
+                            <span class="config-value">${data.total_targets}</span>
+                        </div>
+                        <h4 style="margin: 15px 0 10px 0;">Sample Targets (First 5)</h4>
+                        <pre style="background: white; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 0.85em;">
+${JSON.stringify(data.targets_sample, null, 2)}
+                        </pre>
+                    `;
+                    document.getElementById('targetConfig').innerHTML = html;
+                } else {
+                    document.getElementById('targetConfig').innerHTML = `<p style="color: #c00;">${data.error || 'Unable to load config'}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('targetConfig').innerHTML = `<p style="color: #c00;">Error: ${error.message}</p>`;
+            });
+        }
+
+        // Start training data generation
+        function startGeneration() {
+            if (!currentDataset) {
+                showMessage('generationStatus', 'Please create a dataset first in Step 1', 'error');
+                return;
+            }
+
+            const numScenes = parseInt(document.getElementById('numScenes').value);
+            const sampleSize = parseInt(document.getElementById('sampleSize').value);
+
+            if (!Number.isFinite(numScenes) || numScenes < 1) {
+                showMessage('generationStatus', 'Number of Scenes must be at least 1', 'error');
+                return;
+            }
+
+            expectedTotalScenes = numScenes;
+            showMessage('generationStatus', 'Launching generation in system terminal...', 'info');
+
+            fetch(`${API_BASE}/generate/start`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    bop_parent_path: bopParentPath,
+                    dataset_name: currentDataset,
+                    cc_textures_path: 'backgrounds',
+                    num_scenes: numScenes,
+                    sample_size: sampleSize,
+                    max_samples: 128
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentJobId = data.job_id;
+                    const terminalName = data.terminal_name ? ` Terminal: ${data.terminal_name}.` : '';
+                    showMessage('generationStatus', `✓ Generation started in system terminal. Job ID: ${data.job_id}.${terminalName}`, 'success');
+                    document.getElementById('generationProgress').style.display = 'block';
+                    startMonitoringJob();
+                } else {
+                    showMessage('generationStatus', `✗ Failed: ${data.error}`, 'error');
+                }
+            })
+            .catch(error => {
+                showMessage('generationStatus', `Error: ${error.message}`, 'error');
+            });
+        }
+
+        // Monitor job status - Simplified: Focus on Status (Running/Completed) only
+        function startMonitoringJob() {
+            if (jobCheckInterval) clearInterval(jobCheckInterval);
+
+            const checkJob = () => {
+                if (!currentJobId) return;
+
+                fetch(`${API_BASE}/generate/status/${currentJobId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'not-found') {
+                            showMessage('generationStatus', '⚠️ Generation job was not found (stale job id or backend restarted). Please start again.', 'warning');
+                            if (jobCheckInterval) clearInterval(jobCheckInterval);
+                            currentJobId = null;
+                            return;
+                        }
+
+                        const totalScenes = Number.isFinite(Number(data.total_scenes)) ? Number(data.total_scenes) : expectedTotalScenes;
+                        const completedScenes = Number.isFinite(Number(data.completed_scenes)) ? Number(data.completed_scenes) : 0;
+                        const sceneProgressPercent = Number.isFinite(Number(data.progress_percent))
+                            ? Math.max(0, Math.min(100, Number(data.progress_percent)))
+                            : (totalScenes > 0 ? Math.max(0, Math.min(100, Math.floor((completedScenes / totalScenes) * 100))) : 0);
+
+                        const callbackEventHtml = data.last_callback_event ? `
+                            <div class="config-item">
+                                <span class="config-label">Callback Event</span>
+                                <span class="config-value">${data.last_callback_event}${data.callback_updated_at ? ` (${new Date(data.callback_updated_at).toLocaleTimeString()})` : ''}</span>
+                            </div>
+                            ${data.last_callback_message ? `
+                            <div class="config-item">
+                                <span class="config-label">Callback Message</span>
+                                <span class="config-value">${data.last_callback_message}</span>
+                            </div>
+                            ` : ''}
+                        ` : '';
+
+                        const sceneProgressHtml = `
+                            <div class="config-item">
+                                <span class="config-label">Scene Progress</span>
+                                <span class="config-value">${completedScenes}/${totalScenes || '--'} (${sceneProgressPercent}%)</span>
+                            </div>
+                            <div style="margin: 8px 0 14px 0; background: #eef2ff; border-radius: 999px; height: 10px; overflow: hidden;">
+                                <div style="height: 100%; width: ${sceneProgressPercent}%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.25s ease;"></div>
+                            </div>
+                        `;
+
+                        // Simplified job info: Status (Running/Completed/Failed) is the source of truth
+                        const jobHtml = `
+                            <div class="config-item">
+                                <span class="config-label">Job ID</span>
+                                <span class="config-value">${data.job_id}</span>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Status</span>
+                                <span class="config-value" style="color: ${data.status === 'completed' ? '#060' : data.status === 'failed' ? '#c00' : '#667eea'}; font-weight: bold; font-size: 16px;">
+                                    ${data.status.toUpperCase()}
+                                </span>
+                            </div>
+                            ${sceneProgressHtml}
+                            ${callbackEventHtml}
+                            ${data.terminal_name ? `
+                            <div class="config-item">
+                                <span class="config-label">Terminal</span>
+                                <span class="config-value">${data.terminal_name}</span>
+                            </div>
+                            ` : ''}
+                            <div class="config-item">
+                                <span class="config-label">Started</span>
+                                <span class="config-value">${data.started_at ? new Date(data.started_at).toLocaleString() : '--'}</span>
+                            </div>
+                            ${data.completed_at ? `
+                            <div class="config-item">
+                                <span class="config-label">Completed</span>
+                                <span class="config-value">${new Date(data.completed_at).toLocaleString()}</span>
+                            </div>
+                            ` : ''}
+                            ${data.return_code !== undefined ? `
+                            <div class="config-item">
+                                <span class="config-label">Exit Code</span>
+                                <span class="config-value" style="color: ${data.return_code === 0 ? '#060' : '#c00'};">${data.return_code}</span>
+                            </div>
+                            ` : ''}
+                        `;
+                        document.getElementById('jobDetails').innerHTML = jobHtml;
+
+                        // ===== Simplified completion logic: Status field is 100% reliable =====
+                        if (data.status === 'completed') {
+                            showMessage('generationStatus', '✓ Generation completed!', 'success');
+                            if (jobCheckInterval) clearInterval(jobCheckInterval);
+                        } else if (data.status === 'failed') {
+                            showMessage('generationStatus', `✗ Generation failed (exit code: ${data.return_code || 'unknown'}). Error: ${data.error || 'Check logs'}`, 'error');
+                            if (jobCheckInterval) clearInterval(jobCheckInterval);
+                        } else if (data.status === 'running') {
+                            showMessage('generationStatus', `⏳ Generating scenes: ${completedScenes}/${totalScenes || '--'} (${sceneProgressPercent}%)`, 'info');
+                        }
+                        // If status === 'running', continue polling
+                    })
+                    .catch(error => console.error('Failed to check job status:', error));
+            };
+
+            jobCheckInterval = setInterval(checkJob, 2000);
+            checkJob(); // Check immediately
+        }
+
+        // Switch tab
+        function switchTab(event, tabName) {
+            event.preventDefault();
+
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Show message
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.className = `status-message ${type}`;
+            element.innerHTML = message;
+            element.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

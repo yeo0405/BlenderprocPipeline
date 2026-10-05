@@ -1,0 +1,53 @@
+/home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/blenderproc/python/loader/BopLoader.py:54: UserWarning: WARNING: `mm2m` is deprecated, please use `object_model_unit='mm'` instead!
+  warnings.warn("WARNING: `mm2m` is deprecated, please use `object_model_unit='mm'` instead!")
+/home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/blenderproc/python/sampler/UpperRegionSampler.py:73: RuntimeWarning: invalid value encountered in divide
+  normal /= np.linalg.norm(normal)
+Selecting render devices...
+Device NVIDIA GeForce RTX 3050 Ti Laptop GPU of type OPTIX found and used.
+Device 11th Gen Intel Core i7-11800H @ 2.30GHz of type CPU found and used.
+Selecting render devices...
+Using only the CPU for rendering
+bob: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/my, dataset_path: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc
+dataset: my
+bob: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/tless, dataset_path: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc
+dataset: tless
+bob: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/ycbv, dataset_path: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc
+dataset: ycbv
+bob: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/tyol, dataset_path: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc
+dataset: tyol
+bob: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/my, dataset_path: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc
+dataset: my
+Warning: Detected that obj_000014.002 is completely inside obj_000001. This might be wrong, if obj_000001 is not water tight or has incorrect normals. If that is the case, consider setting skip_inside_check to True.
+Warning: Detected that Plane is completely inside obj_000001. This might be wrong, if obj_000001 is not water tight or has incorrect normals. If that is the case, consider setting skip_inside_check to True.
+It took 3 tries to place obj_000001
+It took 1 tries to place obj_000014
+It took 1 tries to place obj_000013.001
+It took 1 tries to place obj_000017.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [-0.03330452 -0.36394367  0.11375904] after 1 iterations!
+Trying to put obj_000014
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000014" successfully at [ 0.10463973 -0.3068532   0.0325501 ] after 3 iterations!
+Trying to put obj_000013.001
+Placed object "obj_000013.001" successfully at [-0.00448236 -0.1637238   0.02748501] after 1 iterations!
+Trying to put obj_000017.002
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000017.002" successfully at [-0.09512252 -0.27170023  0.05363822] after 7 iterations!
+Rendering 1 frames of colors, depth...
+
+Finished rendering after 1.918 seconds
+3/17|04:36:50: Calculating GT masks - /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/output/bop_data/my/train_pbr/000000, 0
+3/17|04:36:50: Calculating GT info - /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/output/bop_data/my/train_pbr/000000, 0
+3/17|04:36:50: Calculating COCO annotations - /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/output/bop_data/my/train_pbr/000000
+
+Blender quit
+Using temporary directory: /dev/shm/blender_proc_a74be81f52714b2aa1b04ab24a5ee61a
+Warning: Changed install path from /home_local/yeo... to /home/yeo..., there is no /home_local/ on this machine.
+Using blender in /home/yeo/blender/blender-4.2.1-linux-x64
+Cleaning temporary directory

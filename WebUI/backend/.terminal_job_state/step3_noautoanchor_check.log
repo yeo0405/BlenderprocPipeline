@@ -1,0 +1,15 @@
+YOLOv5  torch 2.10.0+cu128 CUDA:0 (NVIDIA GeForce RTX 3050 Ti Laptop GPU, 3770.8125MB)
+
+Namespace(weights='data/Weights/yolov5s.pt', cfg='YOLOv5-6D-Pose/models/yolov5s_6dpose_bifpn.yaml', data='YOLOv5-6D-Pose/configs/custom/my.yaml', hyp='YOLOv5-6D-Pose/configs/hyp.single.yaml', epochs=1, batch_size=4, img_size=[640, 480], rect=True, resume=False, nosave=False, notest=False, noautoanchor=True, evolve=False, bucket='', cache_images=True, image_weights=False, device='', single_cls=False, optimizer='Adam', sync_bn=False, local_rank=-1, log_imgs=8, log_artifacts=False, workers=1, project='runs/train', entity=None, name='exp', exist_ok=False, quad=False, linear_lr=False, standard_lr=False, symetric=False, world_size=1, global_rank=-1, save_dir='runs/train/exp', total_batch_size=4)
+Start Tensorboard with "tensorboard --logdir runs/train", view at http://localhost:6006/
+[34m[1mhyperparameters: [0mlr0=0.0001, lrf=0.01, lr_factor=0.5, momentum=0.937, weight_decay=0.0005, warmup_epochs=3.0, warmup_momentum=0.8, warmup_bias_lr=0.1, box=1.5, obj=0.1, obj_pw=1.0, cls=0.5, cls_pw=1.0, anchor_t=4.0, hsv_h=0.03, hsv_s=0.7, hsv_v=0.4, degrees=30.0, translate=0.2, scale=0.2, shear=0, perspective=0, blur=0, blur_kernel=5, flipud=False, fliplr=False, background=0.5, multi_scale=False, occlude=0.3, theta=0.2, alpha=2, pretrain_epochs=40
+
+WARNING: Dataset not found, nonexistent paths: ['/home/yeo/Downloads/output/data/Custom/my/test.txt']
+Traceback (most recent call last):
+  File "/home/yeo/Downloads/6DOF/YOLOv5-6D-Pose/train.py", line 556, in <module>
+    train(hyp, opt, device, tb_writer, wandb)
+  File "/home/yeo/Downloads/6DOF/YOLOv5-6D-Pose/train.py", line 68, in train
+    check_dataset(data_dict)  # check
+  File "/home/yeo/Downloads/6DOF/YOLOv5-6D-Pose/utils/general.py", line 378, in check_dataset
+    raise Exception('Dataset not found.')
+Exception: Dataset not found.

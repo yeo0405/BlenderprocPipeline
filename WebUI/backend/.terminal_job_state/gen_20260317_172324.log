@@ -1,0 +1,395 @@
+/home/yeo/Downloads/6DOF/.venv/lib/python3.10/site-packages/blenderproc/python/loader/BopLoader.py:54: UserWarning: WARNING: `mm2m` is deprecated, please use `object_model_unit='mm'` instead!
+  warnings.warn("WARNING: `mm2m` is deprecated, please use `object_model_unit='mm'` instead!")
+/home/yeo/Downloads/6DOF/.venv/lib/python3.10/site-packages/blenderproc/python/sampler/UpperRegionSampler.py:73: RuntimeWarning: invalid value encountered in divide
+  normal /= np.linalg.norm(normal)
+Selecting render devices...
+Device NVIDIA GeForce RTX 3050 Ti Laptop GPU of type OPTIX found and used.
+Device 11th Gen Intel Core i7-11800H @ 2.30GHz of type CPU found and used.
+Selecting render devices...
+Using only the CPU for rendering
+bob: /home/yeo/Downloads/6DOF/bop/BlenderProc/my, dataset_path: /home/yeo/Downloads/6DOF/bop/BlenderProc
+dataset: my
+bob: /home/yeo/Downloads/6DOF/bop/BlenderProc/tless, dataset_path: /home/yeo/Downloads/6DOF/bop/BlenderProc
+dataset: tless
+bob: /home/yeo/Downloads/6DOF/bop/BlenderProc/ycbv, dataset_path: /home/yeo/Downloads/6DOF/bop/BlenderProc
+dataset: ycbv
+bob: /home/yeo/Downloads/6DOF/bop/BlenderProc/tyol, dataset_path: /home/yeo/Downloads/6DOF/bop/BlenderProc
+dataset: tyol
+bob: /home/yeo/Downloads/6DOF/bop/BlenderProc/my, dataset_path: /home/yeo/Downloads/6DOF/bop/BlenderProc
+dataset: my
+It took 1 tries to place obj_000001
+It took 1 tries to place obj_000004
+It took 1 tries to place obj_000017.001
+It took 1 tries to place obj_000004.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [ 0.06423432 -0.30482528  0.11375904] after 1 iterations!
+Trying to put obj_000004
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000004" successfully at [-0.00479055 -0.23430243  0.03900003] after 6 iterations!
+Trying to put obj_000017.001
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Collision detected after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000017.001" successfully at [-0.12915073 -0.25860083  0.00785804] after 7 iterations!
+Trying to put obj_000004.002
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000004.002" successfully at [-0.27077052 -0.38389966  0.0275228 ] after 3 iterations!
+Rendering 8 frames of colors, depth...
+
+Finished rendering after 68.085 seconds
+3/17|09:24:40: Calculating GT masks - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:24:42: Calculating GT info - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:24:43: Calculating COCO annotations - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+Warning: Detected that obj_000023 is completely inside obj_000001. This might be wrong, if obj_000001 is not water tight or has incorrect normals. If that is the case, consider setting skip_inside_check to True.
+It took 3 tries to place obj_000001
+It took 1 tries to place obj_000020
+It took 1 tries to place obj_000003.001
+It took 2 tries to place obj_000006.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [ 0.0893072  -0.36536893  0.11375904] after 1 iterations!
+Trying to put obj_000020
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000020" successfully at [ 0.14212003 -0.23200199  0.02349997] after 9 iterations!
+Trying to put obj_000003.001
+Placed object "obj_000003.001" successfully at [ 0.00200053 -0.19372866  0.08800745] after 1 iterations!
+Trying to put obj_000006.002
+Collision detected after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000006.002" successfully at [-0.10788537 -0.07852847  0.04707503] after 7 iterations!
+Warning! Detected output entries with duplicate keys and paths
+Rendering 8 frames of colors, depth...
+
+Finished rendering after 92.682 seconds
+3/17|09:26:18: Calculating GT masks - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:26:20: Loading gt info from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:26:20: Calculating GT info - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:26:20: Loading coco annotations from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:26:20: Calculating COCO annotations - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+It took 2 tries to place obj_000001
+It took 1 tries to place obj_000020
+It took 1 tries to place obj_000015.001
+It took 2 tries to place obj_000021.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [ 0.2054318  -0.12499069  0.11375904] after 1 iterations!
+Trying to put obj_000020
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000020" successfully at [ 0.19626538 -0.27781746  0.02349997] after 6 iterations!
+Trying to put obj_000015.001
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Collision detected after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000015.001" successfully at [ 0.04256833 -0.27101895  0.02865851] after 8 iterations!
+Trying to put obj_000021.002
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000021.002" successfully at [ 0.37438959 -0.30462599  0.04189992] after 3 iterations!
+Warning! Detected output entries with duplicate keys and paths
+Rendering 8 frames of colors, depth...
+
+Finished rendering after 84.947 seconds
+3/17|09:27:47: Calculating GT masks - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:27:49: Loading gt info from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:27:49: Calculating GT info - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:27:50: Loading coco annotations from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:27:50: Calculating COCO annotations - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+It took 1 tries to place obj_000001
+It took 2 tries to place obj_000020
+It took 1 tries to place obj_000010.001
+It took 2 tries to place obj_000011.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [ 0.03854036 -0.16789688  0.11375904] after 1 iterations!
+Trying to put obj_000020
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000020" successfully at [ 0.14047724 -0.26140532  0.02349997] after 4 iterations!
+Trying to put obj_000010.001
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000010.001" successfully at [ 0.20481093 -0.35685697  0.01833498] after 3 iterations!
+Trying to put obj_000011.002
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000011.002" successfully at [0.08169816 0.0065132  0.03130388] after 15 iterations!
+Warning! Detected output entries with duplicate keys and paths
+Rendering 8 frames of colors, depth...
+
+Finished rendering after 63.194 seconds
+3/17|09:28:55: Calculating GT masks - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:28:57: Loading gt info from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:28:57: Calculating GT info - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:28:57: Loading coco annotations from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:28:57: Calculating COCO annotations - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+It took 2 tries to place obj_000001
+It took 1 tries to place obj_000020
+It took 1 tries to place obj_000019.001
+It took 1 tries to place obj_000010.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [ 0.22704056 -0.20317517  0.11375904] after 1 iterations!
+Trying to put obj_000020
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000020" successfully at [ 0.17325856 -0.11527077  0.02349997] after 14 iterations!
+Trying to put obj_000019.001
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000019.001" successfully at [ 0.04989545 -0.05621218  0.01957512] after 3 iterations!
+Trying to put obj_000010.002
+Bad spacing after drop, retrying!
+Placed object "obj_000010.002" successfully at [0.14504644 0.00814055 0.03298247] after 2 iterations!
+Warning! Detected output entries with duplicate keys and paths
+Rendering 8 frames of colors, depth...
+
+Finished rendering after 98.450 seconds
+3/17|09:30:38: Calculating GT masks - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:30:39: Loading gt info from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:30:39: Calculating GT info - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:30:41: Loading coco annotations from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:30:41: Calculating COCO annotations - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+It took 2 tries to place obj_000001
+It took 2 tries to place obj_000026
+It took 3 tries to place obj_000001.002
+It took 2 tries to place obj_000011.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [-0.05402362  0.31090334  0.11375904] after 1 iterations!
+Trying to put obj_000026
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000026" successfully at [-0.04242177  0.14561468  0.03039265] after 21 iterations!
+Trying to put obj_000001.002
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000001.002" successfully at [-0.21920149  0.39190769  0.07007194] after 3 iterations!
+Trying to put obj_000011.002
+Collision detected after drop, retrying!
+Bad spacing after drop, retrying!
+Collision detected after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000011.002" successfully at [-0.15104729  0.07605001  0.03130388] after 5 iterations!
+Warning! Detected output entries with duplicate keys and paths
+Rendering 8 frames of colors, depth...
+
+Finished rendering after 85.119 seconds
+3/17|09:32:08: Calculating GT masks - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:32:10: Loading gt info from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:32:10: Calculating GT info - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:32:10: Loading coco annotations from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:32:10: Calculating COCO annotations - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+It took 2 tries to place obj_000001
+It took 2 tries to place obj_000021
+It took 1 tries to place obj_000004.001
+It took 1 tries to place obj_000010.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [ 0.31417674 -0.25584167  0.11375904] after 1 iterations!
+Trying to put obj_000021
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000021" successfully at [ 0.3635861  -0.1386908   0.02149999] after 3 iterations!
+Trying to put obj_000004.001
+Placed object "obj_000004.001" successfully at [ 0.22047952 -0.04760429  0.05101848] after 1 iterations!
+Trying to put obj_000010.002
+Bad spacing after drop, retrying!
+Collision detected after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000010.002" successfully at [0.06062871 0.02999223 0.03298247] after 5 iterations!
+Warning! Detected output entries with duplicate keys and paths
+Rendering 8 frames of colors, depth...
+
+Finished rendering after 101.715 seconds
+3/17|09:33:54: Calculating GT masks - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:33:54: Loading gt info from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:33:54: Calculating GT info - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:33:56: Loading coco annotations from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:33:56: Calculating COCO annotations - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+It took 1 tries to place obj_000001
+It took 1 tries to place obj_000019
+It took 1 tries to place obj_000009.001
+It took 1 tries to place obj_000004.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [0.36490729 0.37256178 0.11375904] after 1 iterations!
+Trying to put obj_000019
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000019" successfully at [0.36663762 0.26702392 0.02349997] after 3 iterations!
+Trying to put obj_000009.001
+Bad spacing after drop, retrying!
+Placed object "obj_000009.001" successfully at [0.23992555 0.27518389 0.0418185 ] after 2 iterations!
+Trying to put obj_000004.002
+Placed object "obj_000004.002" successfully at [0.21641675 0.1711131  0.0275228 ] after 1 iterations!
+Warning! Detected output entries with duplicate keys and paths
+Rendering 8 frames of colors, depth...
+
+Finished rendering after 83.074 seconds
+3/17|09:35:21: Calculating GT masks - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:35:22: Loading gt info from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:35:22: Calculating GT info - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:35:23: Loading coco annotations from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:35:23: Calculating COCO annotations - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+Warning: Detected that obj_000019.002 is completely inside obj_000001. This might be wrong, if obj_000001 is not water tight or has incorrect normals. If that is the case, consider setting skip_inside_check to True.
+It took 2 tries to place obj_000001
+It took 2 tries to place obj_000024
+It took 1 tries to place obj_000011.001
+It took 4 tries to place obj_000012.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [0.07602126 0.24086057 0.11375904] after 1 iterations!
+Trying to put obj_000024
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Collision detected after drop, retrying!
+Placed object "obj_000024" successfully at [0.08192114 0.15185572 0.04030001] after 11 iterations!
+Trying to put obj_000011.001
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Collision detected after drop, retrying!
+Collision detected after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000011.001" successfully at [0.04388834 0.03689848 0.12132001] after 23 iterations!
+Trying to put obj_000012.002
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000012.002" successfully at [0.25898272 0.12517202 0.0100348 ] after 5 iterations!
+Warning! Detected output entries with duplicate keys and paths
+Rendering 8 frames of colors, depth...
+
+Finished rendering after 84.587 seconds
+3/17|09:36:50: Calculating GT masks - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:36:53: Loading gt info from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:36:53: Calculating GT info - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:36:53: Loading coco annotations from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:36:53: Calculating COCO annotations - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+It took 3 tries to place obj_000001
+It took 1 tries to place obj_000023
+It took 2 tries to place obj_000009.001
+It took 1 tries to place obj_000010.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [0.03968411 0.29285875 0.11375904] after 1 iterations!
+Trying to put obj_000023
+Bad spacing after drop, retrying!
+Placed object "obj_000023" successfully at [0.19421738 0.22942546 0.02603257] after 2 iterations!
+Trying to put obj_000009.001
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Collision detected after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000009.001" successfully at [0.27944639 0.07620868 0.0418185 ] after 11 iterations!
+Trying to put obj_000010.002
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000010.002" successfully at [0.23101789 0.33081624 0.03298247] after 4 iterations!
+Warning! Detected output entries with duplicate keys and paths
+Rendering 8 frames of colors, depth...
+
+Finished rendering after 100.319 seconds
+3/17|09:38:35: Calculating GT masks - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:38:37: Loading gt info from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:38:37: Calculating GT info - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000, 0
+3/17|09:38:38: Loading coco annotations from existing chunk dir - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+3/17|09:38:38: Calculating COCO annotations - /home/yeo/Downloads/6DOF/output/bop_data/my/train_pbr/000000
+
+Blender quit
+Warning: Changed install path from /home_local/yeo... to /home/yeo..., there is no /home_local/ on this machine.
+Using blender in /home/yeo/blender/blender-4.2.1-linux-x64
+Using temporary directory: /dev/shm/blender_proc_af63505bb463479486f7815e3da8e6b0
+Cleaning temporary directory

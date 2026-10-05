@@ -1,0 +1,67 @@
+Script started on 2026-03-17 17:58:54+08:00 [TERM="xterm-256color" TTY="/dev/pts/12" COLUMNS="80" LINES="24"]
+YOLOv5  torch 2.10.0+cu128 CUDA:0 (NVIDIA GeForce RTX 3050 Ti Laptop GPU, 3770.8125MB)
+
+Namespace(weights='../data/Weights/yolov5s.pt', cfg='../YOLOv5-6D-Pose/models/yolov5s_6dpose_bifpn.yaml', data='../YOLOv5-6D-Pose/configs/custom/my.yaml', hyp='../YOLOv5-6D-Pose/configs/hyp.single.yaml', epochs=10, batch_size=8, img_size=[640, 480], rect=True, resume=False, nosave=False, notest=False, noautoanchor=False, evolve=False, bucket='', cache_images=True, image_weights=False, device='', single_cls=False, optimizer='Adam', sync_bn=False, local_rank=-1, log_imgs=8, log_artifacts=False, workers=1, project='runs/train', entity=None, name='exp', exist_ok=False, quad=False, linear_lr=False, standard_lr=False, symetric=False, world_size=1, global_rank=-1, save_dir='runs/train/exp', total_batch_size=8)
+Start Tensorboard with "tensorboard --logdir runs/train", view at http://localhost:6006/
+[34m[1mhyperparameters: [0mlr0=0.0001, lrf=0.01, lr_factor=0.5, momentum=0.937, weight_decay=0.0005, warmup_epochs=3.0, warmup_momentum=0.8, warmup_bias_lr=0.1, box=1.5, obj=0.1, obj_pw=1.0, cls=0.5, cls_pw=1.0, anchor_t=4.0, hsv_h=0.03, hsv_s=0.7, hsv_v=0.4, degrees=30.0, translate=0.2, scale=0.2, shear=0, perspective=0, blur=0, blur_kernel=5, flipud=False, fliplr=False, background=0.5, multi_scale=False, occlude=0.3, theta=0.2, alpha=2, pretrain_epochs=40
+Downloading https://github.com/ultralytics/yolov5/releases/download/v7.0/yolov5s.pt to ../data/weights/yolov5s.pt...
+Download error: [Errno 2] No such file or directory: '../data/weights/yolov5s.pt.3293d93bb69f4a159425b35a89807a8b.partial'
+ERROR: Download failure: ../data/weights/yolov5s.pt missing, try downloading from https://github.com/ultralytics/yolov5/releases/
+
+
+                 from  n    params  module                                  arguments                     
+  0                -1  1      3520  models.common.Conv                      [3, 32, 6, 2, 2]              
+  1                -1  1     18560  models.common.Conv                      [32, 64, 3, 2]                
+  2                -1  1     18816  models.common.C3                        [64, 64, 1]                   
+  3                -1  1     73984  models.common.Conv                      [64, 128, 3, 2]               
+  4                -1  2    115712  models.common.C3                        [128, 128, 2]                 
+  5                -1  1    295424  models.common.Conv                      [128, 256, 3, 2]              
+  6                -1  3    625152  models.common.C3                        [256, 256, 3]                 
+  7                -1  1   1180672  models.common.Conv                      [256, 512, 3, 2]              
+  8                -1  1   1182720  models.common.C3                        [512, 512, 1]                 
+  9                -1  1    656896  models.common.SPPF                      [512, 512, 5]                 
+ 10                -1  1    131584  models.common.Conv                      [512, 256, 1, 1]              
+ 11                -1  1         0  torch.nn.modules.upsampling.Upsample    [None, 2, 'nearest']          
+ 12           [-1, 6]  1         0  models.common.Concat                    [1]                           
+ 13                -1  1    361984  models.common.C3                        [512, 256, 1, False]          
+ 14                -1  1     33024  models.common.Conv                      [256, 128, 1, 1]              
+ 15                -1  1         0  torch.nn.modules.upsampling.Upsample    [None, 2, 'nearest']          
+ 16           [-1, 4]  1         0  models.common.Concat                    [1]                           
+ 17                -1  1     90880  models.common.C3                        [256, 128, 1, False]          
+ 18                -1  1    147712  models.common.Conv                      [128, 128, 3, 2]              
+ 19       [-1, 14, 6]  1         0  models.common.Concat                    [1]                           
+ 20                -1  1    361984  models.common.C3                        [512, 256, 1, False]          
+ 21                -1  1    590336  models.common.Conv                      [256, 256, 3, 2]              
+ 22          [-1, 10]  1         0  models.common.Concat                    [1]                           
+ 23                -1  1   1182720  models.common.C3                        [512, 512, 1, False]          
+ 24      [17, 20, 23]  1   1842356  models.yolo.Pose                        [1, [[0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5]], [128, 256, 512]]
+/home/yeo/Downloads/6DOF/.venv/lib/python3.10/site-packages/torch/functional.py:505: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:4381.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+Model Summary: 316 layers, 8914036 parameters, 8914036 gradients, 19.7 GFLOPS
+
+Transferred 340/548 items from ../data/Weights/yolov5s.pt
+Transferred 340/548 items from ../data/Weights/yolov5s.pt
+Scaled weight_decay = 0.0005
+Optimizer groups: 93 .bias, 93 conv.weight, 90 other
+Traceback (most recent call last):
+  File "/home/yeo/Downloads/6DOF/WebUI/../YOLOv5-6D-Pose/train.py", line 549, in <module>
+    train(hyp, opt, device, tb_writer, wandb)
+  File "/home/yeo/Downloads/6DOF/WebUI/../YOLOv5-6D-Pose/train.py", line 160, in train
+    wandb_run = wandb.init(config=opt, resume="allow",
+  File "/home/yeo/Downloads/6DOF/.venv/lib/python3.10/site-packages/wandb/sdk/wandb_init.py", line 1595, in init
+    get_sentry().reraise(e)
+  File "/home/yeo/Downloads/6DOF/.venv/lib/python3.10/site-packages/wandb/analytics/sentry.py", line 190, in reraise
+    raise exc.with_traceback(tb)
+  File "/home/yeo/Downloads/6DOF/.venv/lib/python3.10/site-packages/wandb/sdk/wandb_init.py", line 1516, in init
+    wi.maybe_login(init_settings)
+  File "/home/yeo/Downloads/6DOF/.venv/lib/python3.10/site-packages/wandb/sdk/wandb_init.py", line 193, in maybe_login
+    wandb_login._login(
+  File "/home/yeo/Downloads/6DOF/.venv/lib/python3.10/site-packages/wandb/sdk/wandb_login.py", line 190, in _login
+    auth = _find_or_prompt_for_key(
+  File "/home/yeo/Downloads/6DOF/.venv/lib/python3.10/site-packages/wandb/sdk/wandb_login.py", line 266, in _find_or_prompt_for_key
+    auth = wbauth.authenticate_session(
+  File "/home/yeo/Downloads/6DOF/.venv/lib/python3.10/site-packages/wandb/sdk/lib/wbauth/authenticate.py", line 139, in authenticate_session
+    raise UsageError(
+wandb.errors.errors.UsageError: No API key configured. Use `wandb login` to log in.
+
+Script done on 2026-03-17 17:58:59+08:00 [COMMAND_EXIT_CODE="1"]

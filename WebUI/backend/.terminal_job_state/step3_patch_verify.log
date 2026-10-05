@@ -1,0 +1,113 @@
+YOLOv5  torch 2.10.0+cu128 CUDA:0 (NVIDIA GeForce RTX 3050 Ti Laptop GPU, 3770.8125MB)
+
+Namespace(weights='../data/Weights/yolov5s.pt', cfg='../YOLOv5-6D-Pose/models/yolov5s_6dpose_bifpn.yaml', data='../YOLOv5-6D-Pose/configs/custom/my.yaml', hyp='../YOLOv5-6D-Pose/configs/hyp.single.yaml', epochs=1, batch_size=4, img_size=[640, 480], rect=True, resume=False, nosave=False, notest=False, noautoanchor=True, evolve=False, bucket='', cache_images=True, image_weights=False, device='', single_cls=False, optimizer='Adam', sync_bn=False, local_rank=-1, log_imgs=8, log_artifacts=False, workers=1, project='runs/train', entity=None, name='exp', exist_ok=False, quad=False, linear_lr=False, standard_lr=False, symetric=False, world_size=1, global_rank=-1, save_dir='runs/train/exp6', total_batch_size=4)
+Start Tensorboard with "tensorboard --logdir runs/train", view at http://localhost:6006/
+[34m[1mhyperparameters: [0mlr0=0.0001, lrf=0.01, lr_factor=0.5, momentum=0.937, weight_decay=0.0005, warmup_epochs=3.0, warmup_momentum=0.8, warmup_bias_lr=0.1, box=1.5, obj=0.1, obj_pw=1.0, cls=0.5, cls_pw=1.0, anchor_t=4.0, hsv_h=0.03, hsv_s=0.7, hsv_v=0.4, degrees=30.0, translate=0.2, scale=0.2, shear=0, perspective=0, blur=0, blur_kernel=5, flipud=False, fliplr=False, background=0.5, multi_scale=False, occlude=0.3, theta=0.2, alpha=2, pretrain_epochs=40
+
+                 from  n    params  module                                  arguments                     
+  0                -1  1      3520  models.common.Conv                      [3, 32, 6, 2, 2]              
+  1                -1  1     18560  models.common.Conv                      [32, 64, 3, 2]                
+  2                -1  1     18816  models.common.C3                        [64, 64, 1]                   
+  3                -1  1     73984  models.common.Conv                      [64, 128, 3, 2]               
+  4                -1  2    115712  models.common.C3                        [128, 128, 2]                 
+  5                -1  1    295424  models.common.Conv                      [128, 256, 3, 2]              
+  6                -1  3    625152  models.common.C3                        [256, 256, 3]                 
+  7                -1  1   1180672  models.common.Conv                      [256, 512, 3, 2]              
+  8                -1  1   1182720  models.common.C3                        [512, 512, 1]                 
+  9                -1  1    656896  models.common.SPPF                      [512, 512, 5]                 
+ 10                -1  1    131584  models.common.Conv                      [512, 256, 1, 1]              
+ 11                -1  1         0  torch.nn.modules.upsampling.Upsample    [None, 2, 'nearest']          
+ 12           [-1, 6]  1         0  models.common.Concat                    [1]                           
+ 13                -1  1    361984  models.common.C3                        [512, 256, 1, False]          
+ 14                -1  1     33024  models.common.Conv                      [256, 128, 1, 1]              
+ 15                -1  1         0  torch.nn.modules.upsampling.Upsample    [None, 2, 'nearest']          
+ 16           [-1, 4]  1         0  models.common.Concat                    [1]                           
+ 17                -1  1     90880  models.common.C3                        [256, 128, 1, False]          
+ 18                -1  1    147712  models.common.Conv                      [128, 128, 3, 2]              
+ 19       [-1, 14, 6]  1         0  models.common.Concat                    [1]                           
+ 20                -1  1    361984  models.common.C3                        [512, 256, 1, False]          
+ 21                -1  1    590336  models.common.Conv                      [256, 256, 3, 2]              
+ 22          [-1, 10]  1         0  models.common.Concat                    [1]                           
+ 23                -1  1   1182720  models.common.C3                        [512, 512, 1, False]          
+ 24      [17, 20, 23]  1   1842356  models.yolo.Pose                        [1, [[0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5]], [128, 256, 512]]
+/home/yeo/Downloads/6DOF/.venv/lib/python3.10/site-packages/torch/functional.py:505: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:4381.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+Model Summary: 316 layers, 8914036 parameters, 8914036 gradients, 19.7 GFLOPS
+
+Transferred 340/548 items from ../data/Weights/yolov5s.pt
+Scaled weight_decay = 0.0005
+Optimizer groups: 93 .bias, 93 conv.weight, 90 other
+wandb init failed, disabling wandb logging: No API key configured. Use `wandb login` to log in.
+Downloading https://github.com/ultralytics/yolov5/releases/download/v7.0/yolov5s.pt to ../data/weights/yolov5s.pt...
+Download error: [Errno 2] No such file or directory: '../data/weights/yolov5s.pt.df95304b47734f74b1ce332f1b0bc278.partial'
+ERROR: Download failure: ../data/weights/yolov5s.pt missing, try downloading from https://github.com/ultralytics/yolov5/releases/
+
+Transferred 340/548 items from ../data/Weights/yolov5s.pt
+Creating occluders from VOC: ../data/VOCdevkit/VOC2012
+[34m[1mtrain: [0mScanning '../output/data/Custom/my/train.cache' for images, labels, masks... 8 found, 0 missing, 0 empty, 0 corrupted, 0 found, 8 missing, 0 empty, 0 corrupted: 100%|██████████| 8/8 [00:00<?, ?it/s][34m[1mtrain: [0mScanning '../output/data/Custom/my/train.cache' for images, labels, masks... 8 found, 0 missing, 0 empty, 0 corrupted, 0 found, 8 missing, 0 empty, 0 corrupted: 100%|██████████| 8/8 [00:00<?, ?it/s]
+  0%|          | 0/8 [00:00<?, ?it/s][34m[1mtrain: [0mCaching images (0.0GB): 100%|██████████| 8/8 [00:00<00:00, 1881.80it/s]
+../output/data/Custom/my/JPEGImages/000000_000002.png
+../output/data/Custom/my/JPEGImages/000000_000003.png
+../output/data/Custom/my/JPEGImages/000000_000004.png
+../output/data/Custom/my/JPEGImages/000000_000005.png
+../output/data/Custom/my/JPEGImages/000000_000006.png
+../output/data/Custom/my/JPEGImages/000000_000007.png
+../output/data/Custom/my/JPEGImages/000000_000008.png
+../output/data/Custom/my/JPEGImages/000000_000009.png
+[34m[1mval: [0mScanning '../output/data/Custom/my/test.cache' for images, labels, masks... 2 found, 0 missing, 0 empty, 0 corrupted, 0 found, 2 missing, 0 empty, 0 corrupted: 100%|██████████| 2/2 [00:00<?, ?it/s][34m[1mval: [0mScanning '../output/data/Custom/my/test.cache' for images, labels, masks... 2 found, 0 missing, 0 empty, 0 corrupted, 0 found, 2 missing, 0 empty, 0 corrupted: 100%|██████████| 2/2 [00:00<?, ?it/s]
+[ WARN:0@7.960] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+  0%|          | 0/2 [00:00<?, ?it/s][ WARN:0@7.966] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+[34m[1mval: [0mCaching images (0.0GB): 100%|██████████| 2/2 [00:00<00:00, 333.53it/s]
+../output/data/Custom/my/JPEGImages/000000_000000.png
+../output/data/Custom/my/JPEGImages/000000_000001.png
+[ WARN:0@7.970] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+[ WARN:0@7.974] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+[ WARN:0@7.980] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+[ WARN:0@7.985] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+/home/yeo/Downloads/6DOF/WebUI/../YOLOv5-6D-Pose/train.py:265: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = amp.GradScaler(enabled=cuda)
+Image sizes 640 train, 480 test
+Using 1 dataloader workers
+Logging results to runs/train/exp6
+Starting training for 1 epochs...
+[ WARN:0@7.989] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+[ WARN:0@7.993] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+
+     Epoch   gpu_mem     l_obj     l_box     l_cls n_targets  img_size
+  0%|          | 0/2 [00:00<?, ?it/s][ WARN:0@7.998] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+[ WARN:0@8.002] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+[ WARN:0@8.006] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+[ WARN:0@8.009] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+Skip backward: loss does not require grad. targets shape: torch.Size([4, 22]), loss: tensor([0.], device='cuda:0')
+Skip optimizer step: no valid backward pass in accumulate window at epoch 0, batch 0
+       0/0    0.914G     2.177         0         0         4       640:   0%|          | 0/2 [00:01<?, ?it/s]       0/0    0.914G     2.177         0         0         4       640:  50%|█████     | 1/2 [00:01<00:01,  1.49s/it][ WARN:0@9.489] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+[ WARN:0@9.493] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+[ WARN:0@9.496] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+[ WARN:0@9.500] global loadsave.cpp:248 findDecoder imread_(''): can't open/read file: check file path/integrity
+Skip backward: loss does not require grad. targets shape: torch.Size([4, 22]), loss: tensor([0.], device='cuda:0')
+       0/0      1.7G     2.177         0         0         4       640:  50%|█████     | 1/2 [00:01<00:01,  1.49s/it]       0/0      1.7G     2.177         0         0         4       640: 100%|██████████| 2/2 [00:01<00:00,  1.31it/s]
+/home/yeo/Downloads/6DOF/WebUI/../YOLOv5-6D-Pose/train.py:362: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  scheduler.step()
+  0%|          | 0/1 [00:00<?, ?it/s]/home/yeo/Downloads/6DOF/YOLOv5-6D-Pose/test.py:156: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast():
+100%|██████████| 1/1 [00:01<00:00,  1.07s/it]100%|██████████| 1/1 [00:01<00:00,  1.07s/it]
+1 epochs completed in 0.001 hours.
+
+-----------------------------------
+  tensor to cuda : 0.000651
+         predict : 1.033512
+    compute loss : 0.002660
+get_region_boxes : 0.022589
+            eval : 0.013903
+             pnp : 0.000384
+           total : 1.059412
+-----------------------------------
+   Mean corner error is 294.232605
+   Acc using 5 px 2D Projection = 0.00%
+   Acc using 0.027814000000000002 vx 3D Transformation = 0.00%
+   Acc using 5 cm 5 degree metric = 0.00%
+   Translation error: 775.549426, angle error: 43.459948
+(294.2326, 0.0, 0.0, 0.0, 2.175769567489624, 0.0, 0.0, 0.0)
+Saving best model with fitness: [          0]
+Optimizer stripped from runs/train/exp6/weights/last.pt, 18.1MB
+Optimizer stripped from runs/train/exp6/weights/best.pt, 18.1MB

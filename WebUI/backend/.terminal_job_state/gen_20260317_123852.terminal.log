@@ -1,0 +1,57 @@
+/home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/blenderproc/python/loader/BopLoader.py:54: UserWarning: WARNING: `mm2m` is deprecated, please use `object_model_unit='mm'` instead!
+  warnings.warn("WARNING: `mm2m` is deprecated, please use `object_model_unit='mm'` instead!")
+/home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/blenderproc/python/sampler/UpperRegionSampler.py:73: RuntimeWarning: invalid value encountered in divide
+  normal /= np.linalg.norm(normal)
+Selecting render devices...
+Device NVIDIA GeForce RTX 3050 Ti Laptop GPU of type OPTIX found and used.
+Device 11th Gen Intel Core i7-11800H @ 2.30GHz of type CPU found and used.
+Selecting render devices...
+Using only the CPU for rendering
+bob: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/my, dataset_path: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc
+dataset: my
+bob: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/tless, dataset_path: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc
+dataset: tless
+bob: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/ycbv, dataset_path: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc
+dataset: ycbv
+bob: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/tyol, dataset_path: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc
+dataset: tyol
+bob: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc/my, dataset_path: /home/yeo/Downloads/SG/src/tomo2-imaging/implementation/6dof_detect/bop/BlenderProc
+dataset: my
+It took 1 tries to place obj_000001
+It took 1 tries to place obj_000024
+It took 1 tries to place obj_000010.001
+It took 1 tries to place obj_000017.002
+Trying to put obj_000001
+Placed object "obj_000001" successfully at [-0.39671957  0.00327219  0.11375904] after 1 iterations!
+Trying to put obj_000024
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000024" successfully at [-0.27585998 -0.07570526  0.04029989] after 24 iterations!
+Trying to put obj_000010.001
+Placed object "obj_000010.001" successfully at [-0.09282194 -0.09839988  0.0183351 ] after 1 iterations!
+Trying to put obj_000017.002
+Bad spacing after drop, retrying!
+Bad spacing after drop, retrying!
+Placed object "obj_000017.002" successfully at [-0.09272639 -0.19194776  0.05363822] after 3 iterations!
+Rendering 50 frames of colors, depth...
