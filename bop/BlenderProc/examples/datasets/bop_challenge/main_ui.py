@@ -8,6 +8,8 @@ import glob
 import re
 import bpy
 
+os.environ["PYOPENGL_PLATFORM"] = "egl"
+
 parser = argparse.ArgumentParser()
 parser.add_argument("bop_parent_path")
 parser.add_argument("dataset_name")
@@ -19,104 +21,688 @@ parser.add_argument("--max_samples", type=int, default=128)
 args = parser.parse_args()
 
 FIXED_TARGET_DATASET = "hb"
-TARGET_OBJECT_COUNT = 3
 
-POSE_MODE_NORMAL_PHYSICS = 0
-POSE_MODE_FRONT_UP_PHYSICS = 1
-POSE_MODE_FLOAT = 2
+ENABLE_PHYSICS = True
+DROP_HEIGHT = 0.3
+TRUE_Z_OFFSET = 0.02
+TRUE_CASE_PROBABILITY = 0.2
 
-LIGHT_INTENSITY_SCALE = 1.0
-LIGHT_COLOR_TEMPERATURE_ENABLED = True
-LIGHT_COLOR_TEMPERATURE_MIN = 2800
-LIGHT_COLOR_TEMPERATURE_MAX = 7500
-LIGHT_COLOR_TEMPERATURE_PROBABILITY = 0.85
-LIGHT_WARM_COOL_STRENGTH = 0.65
+FALSE_ROT_X_MIN = -15.0
+FALSE_ROT_X_MAX = 15.0
+FALSE_ROT_Y_MIN = -15.0
+FALSE_ROT_Y_MAX = 15.0
+FALSE_ROT_Z_MIN = -20.0
+FALSE_ROT_Z_MAX = 20.0
 
-LIGHT_MAIN_ENERGY_MIN = 1.0
-LIGHT_MAIN_ENERGY_MAX = 15.0
-LIGHT_POINT_ENERGY_MIN = 30.0
-LIGHT_POINT_ENERGY_MAX = 900.0
-LIGHT_SECONDARY_ENERGY_MIN = 0.0
-LIGHT_SECONDARY_ENERGY_MAX = 400.0
-LIGHT_FILL_ENERGY_MIN = 0.0
-LIGHT_FILL_ENERGY_MAX = 250.0
-LIGHT_DIRECTION_RANDOMNESS = 1.0
-LIGHT_POINT_COUNT = 3
+BOX_X_MIN = -0.5
+BOX_X_MAX = 0.5
+BOX_Y_MIN = -0.5
+BOX_Y_MAX = 0.5
+BOX_Z_ROT_MIN = -180.0
+BOX_Z_ROT_MAX = 180.0
 
-LIGHT_MODE_WEIGHTS = {
-    "normal": 35,
-    "bright": 10,
-    "dark": 10,
-    "warm": 10,
-    "cool": 10,
-    "strong_side": 10,
-    "backlight": 10,
-    "top": 5
-}
+CAMERA_DISTANCE_MIN = 0.5
+CAMERA_DISTANCE_MAX = 0.8
+CAMERA_AZIMUTH_MIN = -180.0
+CAMERA_AZIMUTH_MAX = 180.0
+CAMERA_ELEVATION_MIN = 25.0
+CAMERA_ELEVATION_MAX = 45.0
+CAMERA_INPLANE_MIN = -5.0
+CAMERA_INPLANE_MAX = 5.0
+CAMERA_LOOK_X_MIN = -0.05
+CAMERA_LOOK_X_MAX = 0.05
+CAMERA_LOOK_Y_MIN = -0.04
+CAMERA_LOOK_Y_MAX = 0.04
+CAMERA_LOOK_Z_OFFSET = 0.05
+CAMERA_AZIMUTH_JITTER = 1.5
 
-cpu_threads = os.environ.get("BLENDER_THREADS")
-if cpu_threads:
-    try:
-        cpu_threads = max(1, int(cpu_threads))
-    except ValueError:
-        cpu_threads = None
+TARGET_X_MIN = -0.12
+TARGET_X_MAX = 0.12
+TARGET_Y_MIN = -0.10
+TARGET_Y_MAX = 0.10
 
-physics_substeps = int(
+DISTRACTOR_OBJECT_COUNT = 3
+DISTRACTOR_MARGIN = 0.05
+DISTRACTOR_MAX_TRIES = 100
+
+LIGHT_X_MIN = -1.5
+LIGHT_X_MAX = 1.5
+LIGHT_Y_MIN = -1.5
+LIGHT_Y_MAX = 1.5
+LIGHT_Z_MIN = 2.0
+LIGHT_Z_MAX = 4.0
+LIGHT_ENERGY_MIN = 100.0
+LIGHT_ENERGY_MAX = 500.0
+
+PHYSICS_SUBSTEPS = int(
     os.environ.get("PHYSICS_SUBSTEPS", "20")
 )
-physics_solver_iters = int(
+PHYSICS_SOLVER_ITERS = int(
     os.environ.get("PHYSICS_SOLVER_ITERS", "25")
 )
 
+CPU_THREADS = os.environ.get("BLENDER_THREADS")
+
+if CPU_THREADS:
+    try:
+        CPU_THREADS = max(1, int(CPU_THREADS))
+    except ValueError:
+        CPU_THREADS = None
+
 print(
     f"[CPU] threads="
-    f"{cpu_threads if cpu_threads else 'AUTO'}, "
-    f"physics={physics_substeps}/"
-    f"{physics_solver_iters}"
+    f"{CPU_THREADS if CPU_THREADS else 'AUTO'}, "
+    f"physics="
+    f"{PHYSICS_SUBSTEPS}/{PHYSICS_SOLVER_ITERS}"
 )
 
+cc_textures = []
+room_planes = []
+light_point = None
+box = None
+table = None
 
-def resolve_dataset_path(base_path: str, dataset_name: str) -> str:
-    path = os.path.join(base_path, dataset_name)
+box_center = None
+box_top = None
+box_bottom = None
+
+table_center = None
+table_top = None
+
+xmin = xmax = ymin = ymax = None
+
+box_reference_center = None
+box_reference_z_min = None
+
+
+def resolve_dataset_path(base_path, dataset_name):
+    path = os.path.join(
+        base_path,
+        dataset_name
+    )
+
     if os.path.isdir(path):
         return path
-    raise FileNotFoundError(f"Dataset not found: {path}")
+
+    raise FileNotFoundError(
+        f"Dataset not found: {path}"
+    )
+
+
+def clear_bop_properties(obj):
+    blender_obj = obj.blender_obj
+
+    for key in (
+        "category_id",
+        "bop_dataset_name",
+        "object_type",
+        "original_bbox"
+    ):
+        if key in blender_obj:
+            del blender_obj[key]
+
+
+def set_bop_properties(obj, category_id, object_type):
+    clear_bop_properties(obj)
+
+    blender_obj = obj.blender_obj
+
+    blender_obj["category_id"] = int(category_id)
+    blender_obj["bop_dataset_name"] = str(
+        FIXED_TARGET_DATASET
+    )
+    blender_obj["object_type"] = str(
+        object_type
+    )
+    blender_obj["original_bbox"] = (
+        np.asarray(
+            obj.get_bound_box(),
+            dtype=float
+        ).tolist()
+    )
+
+
+def set_object_type(obj, object_type):
+    blender_obj = obj.blender_obj
+
+    if "object_type" in blender_obj:
+        del blender_obj["object_type"]
+
+    blender_obj["object_type"] = str(
+        object_type
+    )
+
+
+def setup_static_collision(
+    obj,
+    collision_shape="MESH"
+):
+    obj.hide(False)
+    obj.disable_rigidbody()
+
+    obj.enable_rigidbody(
+        False,
+        collision_shape=collision_shape,
+        friction=100.0,
+        linear_damping=0.99,
+        angular_damping=0.99
+    )
+
+
+def setup_dynamic_collision(obj):
+    obj.enable_rigidbody(
+        True,
+        mass=1.0,
+        friction=100.0,
+        linear_damping=0.99,
+        angular_damping=0.99
+    )
+
+
+def sample_scene_rotation():
+    return np.array([
+        np.random.choice([0.0, np.pi]),
+        0.0,
+        np.random.choice([0.0, np.pi])
+    ], dtype=np.float32)
+
+
+def randomize_background():
+    if not cc_textures:
+        return
+
+    material = np.random.choice(
+        cc_textures
+    )
+
+    for plane in room_planes:
+        plane.replace_materials(
+            material
+        )
+
+
+def randomize_light():
+    light_point.set_location([
+        np.random.uniform(
+            LIGHT_X_MIN,
+            LIGHT_X_MAX
+        ),
+        np.random.uniform(
+            LIGHT_Y_MIN,
+            LIGHT_Y_MAX
+        ),
+        np.random.uniform(
+            LIGHT_Z_MIN,
+            LIGHT_Z_MAX
+        )
+    ])
+
+    light_point.set_energy(
+        np.random.uniform(
+            LIGHT_ENERGY_MIN,
+            LIGHT_ENERGY_MAX
+        )
+    )
+
+
+def prepare_target(obj, obj_id):
+    set_bop_properties(
+        obj,
+        obj_id,
+        "target"
+    )
+
+    obj.set_shading_mode("auto")
+
+    mats = obj.get_materials()
+
+    if not mats:
+        mat = bproc.material.create(
+            "auto_mat"
+        )
+        obj.replace_materials(mat)
+    else:
+        mat = mats[0]
+
+    mat.set_principled_shader_value(
+        "Roughness",
+        np.random.uniform(0.0, 1.0)
+    )
+
+    mat.set_principled_shader_value(
+        "Specular IOR Level",
+        np.random.uniform(0.0, 1.0)
+    )
+
+
+def prepare_box(obj):
+    set_bop_properties(
+        obj,
+        2,
+        "box"
+    )
+
+    obj.set_shading_mode("auto")
+
+
+def prepare_distractor(obj):
+    set_object_type(
+        obj,
+        "distractor"
+    )
+
+    obj.set_shading_mode("auto")
+
+    mats = obj.get_materials()
+
+    if not mats:
+        mat = bproc.material.create(
+            "distractor_mat"
+        )
+        obj.replace_materials(mat)
+    else:
+        mat = mats[0]
+
+    mat.set_principled_shader_value(
+        "Roughness",
+        np.random.uniform(0.0, 1.0)
+    )
+
+    mat.set_principled_shader_value(
+        "Specular IOR Level",
+        np.random.uniform(0.0, 1.0)
+    )
+
+
+def prepare_table(obj):
+    set_object_type(
+        obj,
+        "table"
+    )
+
+    obj.set_shading_mode("auto")
+
+
+def rotate_xy(offset, angle):
+    c = np.cos(angle)
+    s = np.sin(angle)
+
+    x, y = offset
+
+    return np.array([
+        c * x - s * y,
+        s * x + c * y
+    ])
+
+
+def randomize_box_pose():
+    angle = np.deg2rad(
+        np.random.uniform(
+            BOX_Z_ROT_MIN,
+            BOX_Z_ROT_MAX
+        )
+    )
+
+    xy = np.array([
+        np.random.uniform(
+            BOX_X_MIN,
+            BOX_X_MAX
+        ),
+        np.random.uniform(
+            BOX_Y_MIN,
+            BOX_Y_MAX
+        )
+    ])
+
+    box.set_rotation_euler([
+        0.0,
+        0.0,
+        angle
+    ])
+
+    box.set_location([
+        xy[0],
+        xy[1],
+        0.0
+    ])
+
+    bbox = np.asarray(
+        box.get_bound_box(),
+        dtype=float
+    )
+
+    current_z_min = bbox[:, 2].min()
+
+    box.set_location([
+        xy[0],
+        xy[1],
+        table_top - current_z_min
+    ])
+
+    bbox = np.asarray(
+        box.get_bound_box(),
+        dtype=float
+    )
+
+    center = bbox.mean(axis=0)
+
+    print(
+        f"[BOX] location=("
+        f"{center[0]:.4f}, "
+        f"{center[1]:.4f}, "
+        f"{center[2]:.4f}), "
+        f"rotation_z="
+        f"{np.rad2deg(angle):.2f}°"
+    )
+
+    return center, angle
+
+
+def sample_false_pose(
+    obj,
+    scene_rotation
+):
+    rotation = scene_rotation.copy()
+
+    rotation += np.deg2rad([
+        np.random.uniform(
+            FALSE_ROT_X_MIN,
+            FALSE_ROT_X_MAX
+        ),
+        np.random.uniform(
+            FALSE_ROT_Y_MIN,
+            FALSE_ROT_Y_MAX
+        ),
+        np.random.uniform(
+            FALSE_ROT_Z_MIN,
+            FALSE_ROT_Z_MAX
+        )
+    ])
+
+    local_xy = np.array([
+        np.random.uniform(
+            TARGET_X_MIN,
+            TARGET_X_MAX
+        ),
+        np.random.uniform(
+            TARGET_Y_MIN,
+            TARGET_Y_MAX
+        )
+    ])
+
+    box_angle = box.get_rotation_euler()[2]
+
+    world_xy = (
+        rotate_xy(
+            local_xy,
+            box_angle
+        )
+        + box_center[:2]
+    )
+
+    obj.set_rotation_euler(
+        rotation
+    )
+
+    bbox = np.asarray(
+        obj.get_bound_box(),
+        dtype=float
+    )
+
+    target_z_min = bbox[:, 2].min()
+
+    obj.set_location([
+        world_xy[0],
+        world_xy[1],
+        box_top + DROP_HEIGHT - target_z_min
+    ])
+
+
+def restore_initial_pose(
+    obj,
+    transform,
+    scene_rotation,
+    reference_box_center
+):
+    local_xy = (
+        transform["location"][:2]
+        - reference_box_center[:2]
+    )
+
+    box_angle = box.get_rotation_euler()[2]
+
+    world_xy = (
+        rotate_xy(
+            local_xy,
+            box_angle
+        )
+        + box_center[:2]
+    )
+
+    location = transform["location"].copy()
+
+    location[:2] = world_xy
+
+    location[2] += (
+        box_center[2]
+        - reference_box_center[2]
+        + TRUE_Z_OFFSET
+    )
+
+    obj.set_location(
+        location
+    )
+
+    obj.set_rotation_euler(
+        transform["rotation"]
+        + scene_rotation
+        + np.array([
+            0.0,
+            0.0,
+            box_angle
+        ])
+    )
+
+
+def get_xy_aabb(obj):
+    bbox = np.asarray(
+        obj.get_bound_box(),
+        dtype=float
+    )
+
+    return (
+        bbox[:, 0].min(),
+        bbox[:, 0].max(),
+        bbox[:, 1].min(),
+        bbox[:, 1].max()
+    )
+
+
+def aabb_overlap(
+    a,
+    b,
+    margin=0.0
+):
+    return not (
+        a[1] + margin < b[0]
+        or a[0] - margin > b[1]
+        or a[3] + margin < b[2]
+        or a[2] - margin > b[3]
+    )
+
+
+def sample_distractor_pose(obj):
+    for _ in range(
+        DISTRACTOR_MAX_TRIES
+    ):
+        obj.set_rotation_euler(
+            bproc.sampler.uniformSO3()
+        )
+
+        bbox = np.asarray(
+            obj.get_bound_box(),
+            dtype=float
+        )
+
+        z_min = bbox[:, 2].min()
+
+        x = np.random.uniform(
+            xmin + 0.05,
+            xmax - 0.05
+        )
+
+        y = np.random.uniform(
+            ymin + 0.05,
+            ymax - 0.05
+        )
+
+        obj.set_location([
+            x,
+            y,
+            table_top
+            + np.random.uniform(
+                0.03,
+                0.15
+            )
+            - z_min
+        ])
+
+        obj_aabb = get_xy_aabb(
+            obj
+        )
+
+        box_aabb = get_xy_aabb(
+            box
+        )
+
+        if not aabb_overlap(
+            obj_aabb,
+            box_aabb,
+            DISTRACTOR_MARGIN
+        ):
+            return True
+
+    return False
+
+
+def add_camera_poses(bvh):
+    azimuths = np.linspace(
+        CAMERA_AZIMUTH_MIN,
+        CAMERA_AZIMUTH_MAX,
+        args.sample_size,
+        endpoint=False
+    )
+
+    np.random.shuffle(
+        azimuths
+    )
+
+    cam_poses = 0
+
+    for azimuth_deg in azimuths:
+        azimuth_deg += np.random.uniform(
+            -CAMERA_AZIMUTH_JITTER,
+            CAMERA_AZIMUTH_JITTER
+        )
+
+        distance = np.random.uniform(
+            CAMERA_DISTANCE_MIN,
+            CAMERA_DISTANCE_MAX
+        )
+
+        elevation = np.deg2rad(
+            np.random.uniform(
+                CAMERA_ELEVATION_MIN,
+                CAMERA_ELEVATION_MAX
+            )
+        )
+
+        azimuth = np.deg2rad(
+            azimuth_deg
+        )
+
+        horizontal_distance = (
+            distance * np.cos(elevation)
+        )
+
+        location = box_center + np.array([
+            horizontal_distance
+            * np.sin(azimuth),
+            -horizontal_distance
+            * np.cos(azimuth),
+            distance
+            * np.sin(elevation)
+        ])
+
+        poi = box_center.copy()
+
+        poi += np.array([
+            np.random.uniform(
+                CAMERA_LOOK_X_MIN,
+                CAMERA_LOOK_X_MAX
+            ),
+            np.random.uniform(
+                CAMERA_LOOK_Y_MIN,
+                CAMERA_LOOK_Y_MAX
+            ),
+            CAMERA_LOOK_Z_OFFSET
+        ])
+
+        rot = (
+            bproc.camera
+            .rotation_from_forward_vec(
+                poi - location,
+                inplane_rot=np.deg2rad(
+                    np.random.uniform(
+                        CAMERA_INPLANE_MIN,
+                        CAMERA_INPLANE_MAX
+                    )
+                )
+            )
+        )
+
+        cam2world = (
+            bproc.math
+            .build_transformation_mat(
+                location,
+                rot
+            )
+        )
+
+        if bproc.camera.perform_obstacle_in_view_check(
+            cam2world,
+            {"min": 0.3},
+            bvh
+        ):
+            bproc.camera.add_camera_pose(
+                cam2world
+            )
+            cam_poses += 1
+
+    return cam_poses
 
 
 bproc.init()
 
-if cpu_threads is not None:
+bproc.renderer.set_render_devices(
+    use_only_cpu=False
+)
+
+if CPU_THREADS is not None:
     scene = bpy.context.scene
     scene.render.threads_mode = "FIXED"
-    scene.render.threads = cpu_threads
+    scene.render.threads = CPU_THREADS
+
     print(
-        f"[CPU] Blender render threads: {cpu_threads}"
+        f"[CPU] Blender render threads: "
+        f"{CPU_THREADS}"
     )
 
-bproc.renderer.set_render_devices(use_only_cpu=False)
 
 target_dataset_path = resolve_dataset_path(
     args.bop_parent_path,
     FIXED_TARGET_DATASET
 )
-
-distractor_dir = os.path.join(
-    args.bop_parent_path,
-    "distractor_objs"
-)
-
-blend_files = glob.glob(
-    os.path.join(distractor_dir, "*.blend")
-)
-distractor_objs = []
-
-for blend in blend_files:
-    distractor_objs.extend(
-        bproc.loader.load_blend(
-            blend,
-            obj_types="mesh"
-        )
-    )
 
 models_dir = os.path.join(
     target_dataset_path,
@@ -124,62 +710,228 @@ models_dir = os.path.join(
 )
 
 blend_files = glob.glob(
-    os.path.join(models_dir, "obj_*.blend")
+    os.path.join(
+        models_dir,
+        "obj_*.blend"
+    )
 )
 
-obj_ids = []
 blend_map = {}
 
-for f in blend_files:
-    m = re.search(
+for path in blend_files:
+    match = re.search(
         r"obj_(\d+)\.blend",
-        os.path.basename(f)
+        os.path.basename(path)
     )
-    if m:
-        obj_id = int(m.group(1))
-        obj_ids.append(obj_id)
-        blend_map[obj_id] = f
 
-obj_ids.sort()
-print(f"[INFO] Found blend objects: {obj_ids}")
+    if match:
+        blend_map[
+            int(match.group(1)
+        )] = path
 
-target_bop_objs = []
+print(
+    f"[INFO] Found blend objects: "
+    f"{sorted(blend_map.keys())}"
+)
 
-for obj_id in obj_ids:
-    objs = bproc.loader.load_blend(
-        blend_map[obj_id],
+if 2 not in blend_map:
+    raise FileNotFoundError(
+        f"obj_000002.blend not found in "
+        f"{models_dir}"
+    )
+
+candidate_ids = sorted(
+    obj_id
+    for obj_id in blend_map
+    if obj_id != 2
+)
+
+if not candidate_ids:
+    raise RuntimeError(
+        "No target objects found besides "
+        "obj_000002."
+    )
+
+print(
+    f"[INFO] Candidate target IDs: "
+    f"{candidate_ids}"
+)
+
+
+distractor_dir = os.path.join(
+    args.bop_parent_path,
+    "distractor_objs"
+)
+
+distractor_blend_files = glob.glob(
+    os.path.join(
+        distractor_dir,
+        "*.blend"
+    )
+)
+
+distractor_library = []
+
+for path in distractor_blend_files:
+    loaded = bproc.loader.load_blend(
+        path,
         obj_types="mesh"
     )
 
-    if not objs:
-        print(
-            f"[WARNING] No mesh in "
-            f"{blend_map[obj_id]}"
+    for obj in loaded:
+        prepare_distractor(
+            obj
         )
-        continue
 
-    for obj in objs:
-        obj.set_cp("category_id", obj_id)
-        obj.set_cp(
-            "bop_dataset_name",
-            FIXED_TARGET_DATASET
+        obj.hide(True)
+        obj.disable_rigidbody()
+
+        distractor_library.append(
+            obj
         )
-        target_bop_objs.append(obj)
 
 print(
-    f"[INFO] Loaded "
-    f"{len(target_bop_objs)} mesh objects"
+    f"[INFO] Loaded distractor objects: "
+    f"{len(distractor_library)}"
 )
 
-if not target_bop_objs:
-    raise RuntimeError(
-        "No target objects were loaded."
+
+table_path = os.path.join(
+    args.bop_parent_path,
+    "desk.blend"
+)
+
+if not os.path.exists(table_path):
+    raise FileNotFoundError(
+        f"desk.blend not found: "
+        f"{table_path}"
     )
 
-print(
-    f"[INFO] Target objects per scene: "
-    f"{min(TARGET_OBJECT_COUNT, len(target_bop_objs))}"
+table_objs = bproc.loader.load_blend(
+    table_path,
+    obj_types="mesh"
 )
+
+if not table_objs:
+    raise RuntimeError(
+        f"No mesh in {table_path}"
+    )
+
+table = table_objs[0]
+
+prepare_table(
+    table
+)
+
+table_bbox = np.asarray(
+    table.get_bound_box(),
+    dtype=float
+)
+
+table_z_min = table_bbox[:, 2].min()
+
+table.set_location([
+    0.0,
+    0.0,
+    -table_z_min
+])
+
+table.set_rotation_euler([
+    0.0,
+    0.0,
+    0.0
+])
+
+setup_static_collision(
+    table,
+    "MESH"
+)
+
+table_bbox = np.asarray(
+    table.get_bound_box(),
+    dtype=float
+)
+
+xmin = table_bbox[:, 0].min()
+xmax = table_bbox[:, 0].max()
+ymin = table_bbox[:, 1].min()
+ymax = table_bbox[:, 1].max()
+
+table_top = table_bbox[:, 2].max()
+table_center = table_bbox.mean(axis=0)
+
+print(
+    f"[TABLE] center="
+    f"{table_center}, "
+    f"top={table_top:.4f}"
+)
+
+
+box_objs = bproc.loader.load_blend(
+    blend_map[2],
+    obj_types="mesh"
+)
+
+if not box_objs:
+    raise RuntimeError(
+        f"No mesh in {blend_map[2]}"
+    )
+
+box = box_objs[0]
+
+prepare_box(
+    box
+)
+
+box_bbox = np.asarray(
+    box.get_bound_box(),
+    dtype=float
+)
+
+box_reference_z_min = (
+    box_bbox[:, 2].min()
+)
+
+box_reference_center = (
+    box_bbox.mean(axis=0)
+)
+
+box.set_location([
+    0.0,
+    0.0,
+    -box_reference_z_min
+])
+
+box.set_rotation_euler([
+    0.0,
+    0.0,
+    0.0
+])
+
+setup_static_collision(
+    box,
+    "MESH"
+)
+
+box_bbox = np.asarray(
+    box.get_bound_box(),
+    dtype=float
+)
+
+box_center = box_bbox.mean(axis=0)
+box_top = box_bbox[:, 2].max()
+box_bottom = box_bbox[:, 2].min()
+
+print(
+    f"[BOX] reference center="
+    f"{box_reference_center}"
+)
+
+print(
+    f"[BOX] initial center="
+    f"{box_center}"
+)
+
 
 width = 1440
 height = 1080
@@ -187,7 +939,7 @@ height = 1080
 K = np.array([
     [1070.7898, 0.0, 722.30939],
     [0.0, 1070.5270, 550.0],
-    [0.0, 0.0, 1.0],
+    [0.0, 0.0, 1.0]
 ], dtype=np.float32)
 
 bproc.camera.set_intrinsics_from_K_matrix(
@@ -196,13 +948,6 @@ bproc.camera.set_intrinsics_from_K_matrix(
     height
 )
 
-for obj in target_bop_objs:
-    obj.set_shading_mode("auto")
-    obj.hide(True)
-
-for obj in distractor_objs:
-    obj.set_shading_mode("auto")
-    obj.hide(True)
 
 room_planes = [
     bproc.object.create_primitive(
@@ -236,485 +981,29 @@ room_planes = [
 ]
 
 for plane in room_planes:
-    plane.enable_rigidbody(
-        False,
-        collision_shape="BOX",
-        mass=1.0,
-        friction=100.0,
-        linear_damping=0.99,
-        angular_damping=0.99
+    setup_static_collision(
+        plane,
+        "BOX"
     )
 
-table_path = os.path.join(
-    args.bop_parent_path,
-    "desk.blend"
-)
-
-if not os.path.exists(table_path):
-    table_path = (
-        "/home/yeo/Downloads/Data_Generation/"
-        "bop/BlenderProc/desk.blend"
-    )
-
-table = bproc.loader.load_blend(
-    table_path,
-    obj_types="mesh"
-)[0]
-
-bbox = np.array(table.get_bound_box())
-z_min = bbox[:, 2].min()
-
-table.set_location([0, 0, -z_min])
-table.enable_rigidbody(
-    False,
-    collision_shape="BOX",
-    friction=100
-)
-
-xmin = bbox[:, 0].min()
-xmax = bbox[:, 0].max()
-ymin = bbox[:, 1].min()
-ymax = bbox[:, 1].max()
-table_top = bbox[:, 2].max()
-
-occlusion_cube = bproc.object.create_primitive(
-    "CUBE",
-    scale=[1, 1, 1],
-    location=[0, 0, -10]
-)
-
-occlusion_cube.set_name("occlusion_cube")
-occlusion_cube.hide(True)
-occlusion_cube.disable_rigidbody()
-occlusion_cube.set_shading_mode("auto")
-
-occlusion_material = bproc.material.create(
-    "occlusion_material"
-)
-occlusion_material.set_principled_shader_value(
-    "Base Color",
-    [0.5, 0.5, 0.5, 1]
-)
-occlusion_material.set_principled_shader_value(
-    "Roughness",
-    0.8
-)
-occlusion_cube.replace_materials(
-    occlusion_material
-)
-
-
-def place_random_occlusion_cube(target_obj, cube):
-    bbox = np.array(target_obj.get_bound_box())
-
-    xmin = bbox[:, 0].min()
-    xmax = bbox[:, 0].max()
-    ymin = bbox[:, 1].min()
-    ymax = bbox[:, 1].max()
-    zmin = bbox[:, 2].min()
-    zmax = bbox[:, 2].max()
-
-    target_size = np.array([
-        xmax - xmin,
-        ymax - ymin,
-        zmax - zmin
-    ])
-
-    target_center = np.array([
-        (xmin + xmax) * 0.5,
-        (ymin + ymax) * 0.5,
-        (zmin + zmax) * 0.5
-    ])
-
-    scale_xy = 0.60
-    cube_size_x = target_size[0] * scale_xy
-    cube_size_y = target_size[1] * scale_xy
-    cube_size_z = max(
-        target_size[2] * np.random.uniform(0.3, 0.8),
-        0.01
-    )
-
-    cube.set_scale([
-        cube_size_x / 2,
-        cube_size_y / 2,
-        cube_size_z / 2
-    ])
-
-    max_offset_x = target_size[0] * 0.35
-    max_offset_y = target_size[1] * 0.35
-
-    offset_x = np.random.uniform(
-        -max_offset_x,
-        max_offset_x
-    )
-    offset_y = np.random.uniform(
-        -max_offset_y,
-        max_offset_y
-    )
-
-    cube_z = zmax + cube_size_z * 0.25
-
-    cube.set_location([
-        target_center[0] + offset_x,
-        target_center[1] + offset_y,
-        cube_z
-    ])
-
-    cube.set_rotation_euler([
-        0,
-        0,
-        np.random.uniform(-np.pi, np.pi)
-    ])
-
-    cube.hide(False)
-    cube.disable_rigidbody()
-
-    print(
-        "[OCCLUSION] "
-        f"target_size={target_size} "
-        f"cube_size={cube_size_x:.4f}, "
-        f"{cube_size_y:.4f}, "
-        f"{cube_size_z:.4f} "
-        f"offset={offset_x:.4f}, "
-        f"{offset_y:.4f}"
-    )
-
-
-obj_bbox = [
-    np.array(obj.get_bound_box())
-    for obj in target_bop_objs
-]
-
-obj_bbox = np.concatenate(obj_bbox, axis=0)
-
-obj_size = np.max(
-    obj_bbox.max(axis=0) -
-    obj_bbox.min(axis=0)
-)
-
-print("Object size:", obj_size)
-
-light_plane = bproc.object.create_primitive(
-    "PLANE",
-    scale=[3, 3, 1],
-    location=[0, 0, 10]
-)
-
-light_plane.set_name("light_plane")
-
-light_plane_material = bproc.material.create(
-    "light_material"
-)
 
 light_point = bproc.types.Light()
-light_point_2 = bproc.types.Light()
-light_point_3 = bproc.types.Light()
+light_point.set_type("POINT")
+light_point.set_energy(200)
+
 
 cc_textures = bproc.loader.load_ccmaterials(
     args.cc_textures_path
 )
 
-margin = 0.05
+print(
+    f"[INFO] Loaded "
+    f"{len(cc_textures)} CC materials"
+)
 
-
-def sample_pose_func(obj, mode):
-    obj.set_location(
-        np.random.uniform(
-            [
-                xmin + margin,
-                ymin + margin,
-                table_top + 0.05
-            ],
-            [
-                xmax - margin,
-                ymax - margin,
-                table_top + 0.30
-            ]
-        )
-    )
-
-    if mode == POSE_MODE_FRONT_UP_PHYSICS:
-        obj.set_rotation_euler([
-            0,
-            0,
-            np.random.uniform(-np.pi, np.pi)
-        ])
-    else:
-        obj.set_rotation_euler(
-            bproc.sampler.uniformSO3()
-        )
-
-
-def kelvin_to_rgb(kelvin):
-    k = np.clip(kelvin, 1000, 40000) / 100.0
-
-    if k <= 66:
-        r = 255
-        g = (
-            99.4708025861 * np.log(k)
-            - 161.1195681661
-        )
-        b = 0 if k <= 19 else (
-            138.5177312231 * np.log(k - 10)
-            - 305.0447927307
-        )
-    else:
-        r = (
-            329.698727446 *
-            ((k - 60) ** -0.1332047592)
-        )
-        g = (
-            288.1221695283 *
-            ((k - 60) ** -0.0755148492)
-        )
-        b = 255
-
-    rgb = np.array([
-        np.clip(r, 0, 255),
-        np.clip(g, 0, 255),
-        np.clip(b, 0, 255)
-    ]) / 255.0
-
-    return np.clip(rgb, 0, 1)
-
-
-def random_rgb(min_value=0.7, max_value=1.0):
-    return np.random.uniform(
-        min_value,
-        max_value,
-        3
-    )
-
-
-def apply_color_temperature(
-    rgb,
-    kelvin,
-    strength
-):
-    temperature_rgb = kelvin_to_rgb(kelvin)
-
-    return np.clip(
-        rgb * (1.0 - strength)
-        + temperature_rgb * strength,
-        0,
-        1
-    )
-
-
-def random_light_position(mode):
-    if mode == "strong_side":
-        side = np.random.choice([-1, 1])
-        return [
-            side * np.random.uniform(2.0, 4.0),
-            np.random.uniform(-2.0, 2.0),
-            np.random.uniform(1.0, 4.0)
-        ]
-
-    if mode == "backlight":
-        return [
-            np.random.uniform(-1.0, 1.0),
-            np.random.choice([-1, 1])
-            * np.random.uniform(2.0, 4.0),
-            np.random.uniform(2.0, 5.0)
-        ]
-
-    if mode == "top":
-        return [
-            np.random.uniform(-2.0, 2.0),
-            np.random.uniform(-2.0, 2.0),
-            np.random.uniform(4.0, 6.0)
-        ]
-
-    return bproc.sampler.shell(
-        center=[0, 0, 1],
-        radius_min=1.0,
-        radius_max=4.0,
-        elevation_min=20,
-        elevation_max=85
-    )
-
-
-def setup_random_lighting():
-    modes = list(LIGHT_MODE_WEIGHTS.keys())
-    weights = np.array(
-        list(LIGHT_MODE_WEIGHTS.values()),
-        dtype=float
-    )
-    weights /= weights.sum()
-
-    lighting_mode = np.random.choice(
-        modes,
-        p=weights
-    )
-
-    print(f"[LIGHT] mode={lighting_mode}")
-
-    main_energy = np.random.uniform(
-        LIGHT_MAIN_ENERGY_MIN,
-        LIGHT_MAIN_ENERGY_MAX
-    )
-    point_energy = np.random.uniform(
-        LIGHT_POINT_ENERGY_MIN,
-        LIGHT_POINT_ENERGY_MAX
-    )
-    secondary_energy = np.random.uniform(
-        LIGHT_SECONDARY_ENERGY_MIN,
-        LIGHT_SECONDARY_ENERGY_MAX
-    )
-    fill_energy = np.random.uniform(
-        LIGHT_FILL_ENERGY_MIN,
-        LIGHT_FILL_ENERGY_MAX
-    )
-
-    main_color = random_rgb(0.75, 1.0)
-    point_color = random_rgb(0.70, 1.0)
-    secondary_color = random_rgb(0.60, 1.0)
-    fill_color = random_rgb(0.60, 1.0)
-
-    if lighting_mode == "dark":
-        main_energy *= np.random.uniform(0.25, 0.55)
-        point_energy *= np.random.uniform(0.20, 0.45)
-        secondary_energy *= np.random.uniform(0.0, 0.3)
-        fill_energy *= np.random.uniform(0.0, 0.25)
-
-    elif lighting_mode == "bright":
-        main_energy *= np.random.uniform(1.3, 2.0)
-        point_energy *= np.random.uniform(1.2, 1.8)
-        secondary_energy *= np.random.uniform(1.2, 1.8)
-        fill_energy *= np.random.uniform(1.2, 1.8)
-
-    elif lighting_mode == "strong_side":
-        main_energy *= np.random.uniform(1.0, 1.5)
-        point_energy *= np.random.uniform(1.2, 1.8)
-        secondary_energy *= np.random.uniform(0.0, 0.4)
-        fill_energy *= np.random.uniform(0.0, 0.3)
-
-    elif lighting_mode == "backlight":
-        main_energy *= np.random.uniform(0.7, 1.2)
-        point_energy *= np.random.uniform(1.2, 1.8)
-        secondary_energy *= np.random.uniform(0.5, 1.0)
-        fill_energy *= np.random.uniform(0.0, 0.4)
-
-    elif lighting_mode == "top":
-        main_energy *= np.random.uniform(1.0, 1.5)
-        point_energy *= np.random.uniform(1.0, 1.5)
-        secondary_energy *= np.random.uniform(0.0, 0.5)
-        fill_energy *= np.random.uniform(0.0, 0.4)
-
-    temperature = None
-
-    if (
-        LIGHT_COLOR_TEMPERATURE_ENABLED
-        and np.random.rand()
-        < LIGHT_COLOR_TEMPERATURE_PROBABILITY
-    ):
-        temperature = np.random.uniform(
-            LIGHT_COLOR_TEMPERATURE_MIN,
-            LIGHT_COLOR_TEMPERATURE_MAX
-        )
-
-        main_color = apply_color_temperature(
-            main_color,
-            temperature,
-            LIGHT_WARM_COOL_STRENGTH
-        )
-        point_color = apply_color_temperature(
-            point_color,
-            temperature,
-            LIGHT_WARM_COOL_STRENGTH
-        )
-        secondary_color = apply_color_temperature(
-            secondary_color,
-            temperature,
-            LIGHT_WARM_COOL_STRENGTH
-        )
-        fill_color = apply_color_temperature(
-            fill_color,
-            temperature,
-            LIGHT_WARM_COOL_STRENGTH
-        )
-
-    if lighting_mode == "warm":
-        warm_temperature = np.random.uniform(
-            LIGHT_COLOR_TEMPERATURE_MIN,
-            min(4000, LIGHT_COLOR_TEMPERATURE_MAX)
-        )
-        main_color = apply_color_temperature(
-            main_color,
-            warm_temperature,
-            0.85
-        )
-        point_color = apply_color_temperature(
-            point_color,
-            warm_temperature,
-            0.85
-        )
-
-    elif lighting_mode == "cool":
-        cool_temperature = np.random.uniform(
-            max(5000, LIGHT_COLOR_TEMPERATURE_MIN),
-            LIGHT_COLOR_TEMPERATURE_MAX
-        )
-        main_color = apply_color_temperature(
-            main_color,
-            cool_temperature,
-            0.85
-        )
-        point_color = apply_color_temperature(
-            point_color,
-            cool_temperature,
-            0.85
-        )
-
-    scale = LIGHT_INTENSITY_SCALE
-
-    main_energy *= scale
-    point_energy *= scale
-    secondary_energy *= scale
-    fill_energy *= scale
-
-    light_plane_material.make_emissive(
-        emission_strength=main_energy,
-        emission_color=np.append(
-            main_color,
-            1.0
-        )
-    )
-
-    light_plane.replace_materials(
-        light_plane_material
-    )
-
-    light_point.set_energy(point_energy)
-    light_point.set_color(point_color)
-    light_point.set_location(
-        random_light_position(lighting_mode)
-    )
-
-    light_point_2.set_energy(secondary_energy)
-    light_point_2.set_color(secondary_color)
-    light_point_2.set_location(
-        random_light_position("normal")
-    )
-
-    light_point_3.set_energy(fill_energy)
-    light_point_3.set_color(fill_color)
-    light_point_3.set_location(
-        random_light_position("normal")
-    )
-
-    if temperature is not None:
-        print(
-            f"[LIGHT] temperature="
-            f"{temperature:.0f}K"
-        )
-
+if not cc_textures:
     print(
-        "[LIGHT] "
-        f"main={main_energy:.2f}, "
-        f"point={point_energy:.2f}, "
-        f"secondary={secondary_energy:.2f}, "
-        f"fill={fill_energy:.2f}"
+        "[WARNING] No CC materials found."
     )
 
 
@@ -726,17 +1015,18 @@ bproc.renderer.set_max_amount_of_samples(
     args.max_samples
 )
 
-for i in range(args.num_scenes):
-    print(
-        f"\n================ Scene "
-        f"{i + 1}/{args.num_scenes} ================\n"
-    )
 
+for i in range(
+    args.num_scenes
+):
     scene = bpy.context.scene
     scene.frame_end = 0
 
-    occlusion_cube.hide(True)
-    occlusion_cube.disable_rigidbody()
+    print(
+        f"\n================ "
+        f"Scene {i + 1}/{args.num_scenes} "
+        f"================\n"
+    )
 
     cam_ob = scene.camera
 
@@ -746,178 +1036,315 @@ for i in range(args.num_scenes):
     ):
         cam_ob.animation_data_clear()
 
-    target_count = min(
-        TARGET_OBJECT_COUNT,
-        len(target_bop_objs)
+    scene_rotation = sample_scene_rotation()
+
+    print(
+        f"[SCENE {i}] Base rotation "
+        f"X={np.rad2deg(scene_rotation[0]):.0f}°, "
+        f"Z={np.rad2deg(scene_rotation[2]):.0f}°"
     )
 
-    sampled_target_bop_objs = list(
-        np.random.choice(
-            target_bop_objs,
-            size=target_count,
-            replace=False
-        )
+    is_scene_b = (
+        np.random.random()
+        < TRUE_CASE_PROBABILITY
     )
 
     print(
-        "[TARGET] selected: "
-        + ", ".join(
-            str(obj.get_cp("category_id"))
-            for obj in sampled_target_bop_objs
+        f"[SCENE {i}] "
+        f"{'B - Initial position' if is_scene_b else 'A - Random placement'}"
+    )
+
+    # 每个 scene 开始时恢复 Box 和桌面
+    box.hide(False)
+    table.hide(False)
+
+    setup_static_collision(
+        box,
+        "MESH"
+    )
+
+    setup_static_collision(
+        table,
+        "MESH"
+    )
+
+    # 清除上一 scene 的 distractor 状态
+    for obj in distractor_library:
+        obj.hide(True)
+        obj.disable_rigidbody()
+
+    randomize_background()
+    randomize_light()
+
+    box_center, box_angle = (
+        randomize_box_pose()
+    )
+
+    box_bbox = np.asarray(
+        box.get_bound_box(),
+        dtype=float
+    )
+
+    box_center = box_bbox.mean(axis=0)
+    box_top = box_bbox[:, 2].max()
+    box_bottom = box_bbox[:, 2].min()
+
+    print(
+        f"[BOX] center={box_center}, "
+        f"top={box_top:.4f}, "
+        f"bottom={box_bottom:.4f}"
+    )
+
+
+    selected_id = int(
+        np.random.choice(
+            candidate_ids
         )
     )
 
-    num_dist = min(3, len(distractor_objs))
+    selected_blend = (
+        blend_map[selected_id]
+    )
 
-    if num_dist > 0:
-        sampled_distractors = list(
+    print(
+        f"[TARGET] selected object: "
+        f"obj_{selected_id:06d}.blend"
+    )
+
+    target_objs = bproc.loader.load_blend(
+        selected_blend,
+        obj_types="mesh"
+    )
+
+    if not target_objs:
+        raise RuntimeError(
+            f"No mesh in {selected_blend}"
+        )
+
+    target_bop_objs = []
+
+    for obj in target_objs:
+        prepare_target(
+            obj,
+            selected_id
+        )
+
+        obj.hide(False)
+        target_bop_objs.append(obj)
+
+
+    target_initial_transforms = [
+        {
+            "location": np.asarray(
+                obj.get_location()
+            ).copy(),
+            "rotation": np.asarray(
+                obj.get_rotation_euler()
+            ).copy()
+        }
+        for obj in target_bop_objs
+    ]
+
+
+    if distractor_library:
+        count = min(
+            DISTRACTOR_OBJECT_COUNT,
+            len(distractor_library)
+        )
+
+        selected_distractors = list(
             np.random.choice(
-                distractor_objs,
-                size=num_dist,
+                distractor_library,
+                size=count,
                 replace=False
             )
         )
     else:
-        sampled_distractors = []
+        selected_distractors = []
 
-    for obj in (
-        sampled_target_bop_objs
-        + sampled_distractors
-    ):
-        mats = obj.get_materials()
 
-        if not mats:
-            mat = bproc.material.create("auto_mat")
-            obj.replace_materials(mat)
-        else:
-            mat = mats[0]
-
-        mat.set_principled_shader_value(
-            "Roughness",
-            np.random.uniform(0, 1.0)
+    print(
+        "[DISTRACTOR] selected: "
+        + (
+            ", ".join(
+                obj.get_name()
+                for obj in selected_distractors
+            )
+            if selected_distractors
+            else "NONE"
         )
-        mat.set_principled_shader_value(
-            "Specular IOR Level",
-            np.random.uniform(0, 1.0)
-        )
+    )
 
-        obj.enable_rigidbody(
-            True,
-            mass=1.0,
-            friction=100.0,
-            linear_damping=0.99,
-            angular_damping=0.99
-        )
+
+    for obj in selected_distractors:
         obj.hide(False)
+        obj.disable_rigidbody()
 
-    setup_random_lighting()
 
-    tex = np.random.choice(cc_textures)
+    if is_scene_b:
+        for obj, transform in zip(
+            target_bop_objs,
+            target_initial_transforms
+        ):
+            obj.disable_rigidbody()
 
-    for plane in room_planes:
-        plane.replace_materials(tex)
+            restore_initial_pose(
+                obj,
+                transform,
+                scene_rotation,
+                box_reference_center
+            )
 
-    rand = np.random.rand()
+        print(
+            "[SCENE] Target collision: DISABLED"
+        )
 
-    if rand < 1 / 3:
-        pose_mode = POSE_MODE_NORMAL_PHYSICS
-    elif rand < 2 / 3:
-        pose_mode = POSE_MODE_FRONT_UP_PHYSICS
     else:
-        pose_mode = POSE_MODE_FLOAT
+        if ENABLE_PHYSICS:
+            for obj in target_bop_objs:
+                setup_dynamic_collision(
+                    obj
+                )
 
-    print(f"[POSE] mode={pose_mode}")
+        bproc.object.sample_poses(
+            objects_to_sample=target_bop_objs,
+            sample_pose_func=lambda obj:
+                sample_false_pose(
+                    obj,
+                    scene_rotation
+                ),
+            max_tries=1000
+        )
 
-    all_objs = (
-        sampled_target_bop_objs
-        + sampled_distractors
+        print(
+            "[SCENE] Target collision: ENABLED"
+        )
+
+
+    valid_distractors = []
+
+    for obj in selected_distractors:
+        if sample_distractor_pose(
+            obj
+        ):
+            valid_distractors.append(
+                obj
+            )
+        else:
+            print(
+                f"[DISTRACTOR] Could not place "
+                f"{obj.get_name()} outside Box; "
+                f"hiding."
+            )
+
+            obj.hide(True)
+
+    selected_distractors = (
+        valid_distractors
     )
 
-    bproc.object.sample_poses(
-        objects_to_sample=all_objs,
-        sample_pose_func=lambda obj:
-            sample_pose_func(obj, pose_mode),
-        max_tries=1000
-    )
 
-    if pose_mode != POSE_MODE_FLOAT:
+    if ENABLE_PHYSICS:
+        for obj in selected_distractors:
+            setup_dynamic_collision(
+                obj
+            )
+
+
+    if (
+        ENABLE_PHYSICS
+        and not is_scene_b
+    ):
         bproc.object.simulate_physics_and_fix_final_poses(
             min_simulation_time=3,
             max_simulation_time=10,
             check_object_interval=1,
-            substeps_per_frame=physics_substeps,
-            solver_iters=physics_solver_iters
+            substeps_per_frame=PHYSICS_SUBSTEPS,
+            solver_iters=PHYSICS_SOLVER_ITERS
         )
 
-    if pose_mode == POSE_MODE_FRONT_UP_PHYSICS:
-        target_obj = np.random.choice(
-            sampled_target_bop_objs
-        )
-        place_random_occlusion_cube(
-            target_obj,
-            occlusion_cube
-        )
 
-    bvh = bproc.object.create_bvh_tree_multi_objects(
-        all_objs + [table]
+    scene_objects = (
+        target_bop_objs
+        + selected_distractors
+        + [box, table]
     )
 
-    cam_poses = 0
+    bvh = (
+        bproc.object
+        .create_bvh_tree_multi_objects(
+            scene_objects
+        )
+    )
 
-    while cam_poses < args.sample_size:
-        focus_obj = np.random.choice(
-            sampled_target_bop_objs
+
+    cam_poses = add_camera_poses(
+        bvh
+    )
+
+    print(
+        f"[SCENE {i}] Rendering "
+        f"{cam_poses} camera poses "
+        f"(requested {args.sample_size}, "
+        f"360° horizontal coverage)"
+    )
+
+    if cam_poses == 0:
+        raise RuntimeError(
+            f"[SCENE {i}] "
+            f"No valid camera poses found."
         )
 
-        object_center = bproc.object.compute_poi(
-            [focus_obj]
+
+    data = bproc.renderer.render()
+
+
+    print(
+        f"[SCENE {i}] BOP objects:"
+    )
+
+    for obj in (
+        target_bop_objs + [box]
+    ):
+        category_id = obj.get_cp(
+            "category_id"
         )
 
-        location = bproc.sampler.shell(
-            center=object_center,
-            radius_min=obj_size * 2.5,
-            radius_max=obj_size * 4,
-            elevation_min=25,
-            elevation_max=70
-        )
-
-        poi_offset = np.random.uniform(
-            [-1.5, -1.5, -0.8],
-            [1.5, 1.5, 0.8]
-        ) * obj_size
-
-        poi = object_center + poi_offset
-
-        rot = bproc.camera.rotation_from_forward_vec(
-            poi - location,
-            inplane_rot=np.random.uniform(
-                -np.pi / 8,
-                np.pi / 8
+        print(
+            "    ",
+            obj.get_name(),
+            "category_id =",
+            category_id,
+            "type =",
+            type(category_id),
+            "object_type =",
+            obj.get_cp(
+                "object_type"
             )
         )
 
-        cam2world = bproc.math.build_transformation_mat(
-            location,
-            rot
-        )
-
-        if bproc.camera.perform_obstacle_in_view_check(
-            cam2world,
-            {"min": 0.3},
-            bvh
+        if not isinstance(
+            category_id,
+            (int, np.integer)
         ):
-            bproc.camera.add_camera_pose(cam2world)
-            cam_poses += 1
+            raise TypeError(
+                f"category_id of "
+                f"{obj.get_name()} "
+                f"is not an integer: "
+                f"{category_id!r}, "
+                f"type={type(category_id)}"
+            )
 
-    data = bproc.renderer.render()
 
     bproc.writer.write_bop(
         os.path.join(
             args.output_dir,
             "bop_data"
         ),
-        target_objects=sampled_target_bop_objs,
-        dataset="hb",
+        target_objects=(
+            target_bop_objs + [box]
+        ),
+        dataset=FIXED_TARGET_DATASET,
         depth_scale=0.1,
         depths=data["depth"],
         colors=data["colors"],
@@ -925,14 +1352,25 @@ for i in range(args.num_scenes):
         ignore_dist_thres=10
     )
 
-    for obj in (
-        sampled_target_bop_objs
-        + sampled_distractors
-    ):
+
+    # Scene 结束时隐藏，下一轮开始会重新显示
+    for obj in target_bop_objs:
         obj.hide(True)
         obj.disable_rigidbody()
 
-    occlusion_cube.hide(True)
-    occlusion_cube.disable_rigidbody()
+    for obj in selected_distractors:
+        obj.hide(True)
+        obj.disable_rigidbody()
+
+    box.hide(True)
+    box.disable_rigidbody()
+
+    table.hide(True)
+    table.disable_rigidbody()
+
+    print(
+        f"[SCENE {i}] Done."
+    )
+
 
 print("Done")

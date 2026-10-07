@@ -6,4 +6,7 @@ bop/BlenderProc/ycbv
 bop/BlenderProc/backgrounds
 output
 
+bop/BlenderProc/distractor_objs
+bop/BlenderProc/distractor_store
+
 .venv/
