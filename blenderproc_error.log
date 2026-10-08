@@ -1,0 +1,159 @@
+ℹ️  blendkit: Verbose is enabled [14:17:38.077, addon_updater.py:150]
+ℹ️  blendkit: Read in JSON settings from file [14:17:38.078, addon_updater.py:150]
+ℹ️  blendkit: Ports reordered so first port is now 62485 (previous index was 0) [14:17:38.080, client_lib.py:156]
+Created history step 596c5332-7a57-4b85-af99-9a3379644caf
+ℹ️  blendkit: Created new search history step [14:17:38.087, search.py:2698]
+ℹ️  blendkit: No temporarily enabled addons to clean up [14:17:38.087, download.py:419]
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject TM90012_00_210011_R00_001 has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject TM90012_00_210011_R00 has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject ip14_jig has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject alu_table has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject Box 1_v1 has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject Box 1_v1.001 has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject Plane has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject Plane.001 has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject Plane.002 has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject Plane.003 has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject Plane.004 has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject iPhone 14 Plus has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+[CPU] threads=AUTO, physics=20/25
+Selecting render devices...
+Device NVIDIA GeForce RTX 3050 Ti Laptop GPU of type OPTIX found and used.
+Device 11th Gen Intel Core i7-11800H @ 2.30GHz of type CPU found and used.
+Selecting render devices...
+Device NVIDIA GeForce RTX 3050 Ti Laptop GPU of type OPTIX found and used.
+Device 11th Gen Intel Core i7-11800H @ 2.30GHz of type CPU found and used.
+[INFO] Found blend objects: [1, 2, 3, 4]
+[INFO] Candidate target IDs: [1, 4]
+Imported 2 objects
+Selected 2 of the loaded objects by type
+Imported 1 objects
+Selected 1 of the loaded objects by type
+[INFO] Loaded distractor objects: 3
+Imported 1 objects
+Selected 1 of the loaded objects by type
+[TABLE] center=[3.74993600e-01 6.60121441e-06 7.99991842e-03], top=0.0160
+Imported 1 objects
+Selected 1 of the loaded objects by type
+[BOX] reference center=[ 0.         -0.00076019  0.01718262]
+Imported 1 objects
+Selected 1 of the loaded objects by type
+[OBJ3] Loaded obj_000003.blend
+[INFO] Loaded 11 CC materials
+[RENDERER] Depth output: ENABLED
+
+================ Scene 1/10 ================
+
+[SCENE 0] Base rotation X=180°, Z=0°
+[SCENE 0] B - Initial position
+[BOX] location=(-0.0576, 0.1384, 0.0332), rotation_z=15.82°
+[TARGET] selected object: obj_000001.blend
+Imported 1 objects
+Selected 1 of the loaded objects by type
+[DISTRACTOR] selected: ip14_jig, TM90012_00_210011_R00, TM90012_00_210011_R00_001
+[SCENE] Target collision: DISABLED
+[CAMERA] pose=1/10 attempt=1 azimuth=144.79° elevation=42.63° distance=0.566 obstacle_check=True
+[CAMERA] accepted 1/10
+[CAMERA] pose=2/10 attempt=1 azimuth=107.18° elevation=44.78° distance=0.695 obstacle_check=True
+[CAMERA] accepted 2/10
+[CAMERA] pose=3/10 attempt=1 azimuth=-36.45° elevation=45.62° distance=0.561 obstacle_check=False
+[CAMERA] pose=3/10 attempt=2 azimuth=-36.85° elevation=39.68° distance=0.650 obstacle_check=False
+[CAMERA] pose=3/10 attempt=3 azimuth=-36.85° elevation=48.27° distance=0.565 obstacle_check=False
+[CAMERA] pose=3/10 attempt=4 azimuth=-37.19° elevation=39.14° distance=0.638 obstacle_check=False
+[CAMERA] pose=3/10 attempt=5 azimuth=-34.90° elevation=45.02° distance=0.723 obstacle_check=False
+[CAMERA] pose=3/10 attempt=6 azimuth=-36.32° elevation=41.02° distance=0.548 obstacle_check=False
+[CAMERA] pose=3/10 attempt=7 azimuth=-37.12° elevation=34.07° distance=0.717 obstacle_check=False
+[CAMERA] pose=3/10 attempt=8 azimuth=-37.22° elevation=36.58° distance=0.683 obstacle_check=False
+[CAMERA] pose=3/10 attempt=9 azimuth=-37.31° elevation=37.99° distance=0.690 obstacle_check=True
+[CAMERA] accepted 3/10
+[CAMERA] pose=4/10 attempt=1 azimuth=-180.91° elevation=38.28° distance=0.683 obstacle_check=True
+[CAMERA] accepted 4/10
+[CAMERA] pose=5/10 attempt=1 azimuth=-72.84° elevation=37.54° distance=0.755 obstacle_check=False
+[CAMERA] pose=5/10 attempt=2 azimuth=-71.12° elevation=40.58° distance=0.520 obstacle_check=False
+[CAMERA] pose=5/10 attempt=3 azimuth=-72.54° elevation=49.70° distance=0.713 obstacle_check=False
+[CAMERA] pose=5/10 attempt=4 azimuth=-72.83° elevation=32.46° distance=0.550 obstacle_check=False
+[CAMERA] pose=5/10 attempt=5 azimuth=-72.48° elevation=34.93° distance=0.660 obstacle_check=False
+[CAMERA] pose=5/10 attempt=6 azimuth=-72.30° elevation=41.58° distance=0.718 obstacle_check=False
+[CAMERA] pose=5/10 attempt=7 azimuth=-71.19° elevation=42.50° distance=0.734 obstacle_check=False
+[CAMERA] pose=5/10 attempt=8 azimuth=-70.80° elevation=37.30° distance=0.590 obstacle_check=False
+[CAMERA] pose=5/10 attempt=9 azimuth=-72.29° elevation=45.46° distance=0.591 obstacle_check=False
+[CAMERA] pose=5/10 attempt=10 azimuth=-71.41° elevation=36.05° distance=0.671 obstacle_check=False
+[CAMERA] pose=5/10 attempt=11 azimuth=-72.11° elevation=32.69° distance=0.778 obstacle_check=True
+[CAMERA] accepted 5/10
+[CAMERA] pose=6/10 attempt=1 azimuth=0.86° elevation=32.83° distance=0.571 obstacle_check=True
+[CAMERA] accepted 6/10
+[CAMERA] pose=7/10 attempt=1 azimuth=72.44° elevation=44.78° distance=0.658 obstacle_check=True
+[CAMERA] accepted 7/10
+[CAMERA] pose=8/10 attempt=1 azimuth=35.20° elevation=49.88° distance=0.670 obstacle_check=True
+[CAMERA] accepted 8/10
+[CAMERA] pose=9/10 attempt=1 azimuth=-109.34° elevation=46.21° distance=0.524 obstacle_check=False
+[CAMERA] pose=9/10 attempt=2 azimuth=-106.76° elevation=34.53° distance=0.723 obstacle_check=True
+[CAMERA] accepted 9/10
+[CAMERA] pose=10/10 attempt=1 azimuth=-144.35° elevation=41.83° distance=0.583 obstacle_check=True
+[CAMERA] accepted 10/10
+[CAMERA] Successfully generated exactly 10 camera poses.
+[SCENE 0] Rendering 10 camera poses (requested 10, 360° horizontal coverage)
+Rendering 10 frames of colors, depth...
+
+Finished rendering after 140.985 seconds
+[SCENE 0] Render keys: ['depth', 'colors']
+[RENDER] RGB frames: 10, Depth frames: 10
+    iPhone 14 Plus category_id = 1 type = <class 'int'> object_type = target
+    Box 1_v1 category_id = 2 type = <class 'int'> object_type = box
+[BOP] Writing to: /home/yeo/Downloads/BlenderporcGenaratedDataset/test2/bop_data
+10/8|06:20:09: Calculating GT masks - /home/yeo/Downloads/BlenderporcGenaratedDataset/test2/bop_data/hb/train_pbr/000000, 0
+10/8|06:20:11: Loading gt info from existing chunk dir - /home/yeo/Downloads/BlenderporcGenaratedDataset/test2/bop_data/hb/train_pbr/000000
+10/8|06:20:11: Calculating GT info - /home/yeo/Downloads/BlenderporcGenaratedDataset/test2/bop_data/hb/train_pbr/000000, 0
+10/8|06:20:15: Loading coco annotations from existing chunk dir - /home/yeo/Downloads/BlenderporcGenaratedDataset/test2/bop_data/hb/train_pbr/000000
+10/8|06:20:15: Calculating COCO annotations - /home/yeo/Downloads/BlenderporcGenaratedDataset/test2/bop_data/hb/train_pbr/000000
+/home/yeo/Downloads/Data_Generation/bop/BlenderProc/blenderproc/python/types/MeshObjectUtility.py:260: UserWarning: MeshObject iPhone 14 Plus.001 has no rigid_body component enabled
+  warnings.warn(f"MeshObject {self.get_name()} has no rigid_body component enabled")
+[SCENE 0] BOP writer finished.
+[SCENE 0] Done.
+
+================ Scene 2/10 ================
+
+[SCENE 1] Base rotation X=180°, Z=180°
+[SCENE 1] B - Initial position
+[BOX] location=(-0.4232, 0.3625, 0.0332), rotation_z=-162.57°
+[TARGET] selected object: obj_000001.blend
+Imported 1 objects
+Selected 1 of the loaded objects by type
+[DISTRACTOR] selected: ip14_jig, TM90012_00_210011_R00, TM90012_00_210011_R00_001
+[SCENE] Target collision: DISABLED
+[CAMERA] pose=1/10 attempt=1 azimuth=35.85° elevation=36.54° distance=0.738 obstacle_check=True
+[CAMERA] accepted 1/10
+[CAMERA] pose=2/10 attempt=1 azimuth=-70.63° elevation=43.63° distance=0.685 obstacle_check=True
+[CAMERA] accepted 2/10
+[CAMERA] pose=3/10 attempt=1 azimuth=70.79° elevation=38.52° distance=0.553 obstacle_check=True
+[CAMERA] accepted 3/10
+[CAMERA] pose=4/10 attempt=1 azimuth=-0.30° elevation=41.97° distance=0.556 obstacle_check=True
+[CAMERA] accepted 4/10
+[CAMERA] pose=5/10 attempt=1 azimuth=-37.27° elevation=47.35° distance=0.715 obstacle_check=True
+[CAMERA] accepted 5/10
+[CAMERA] pose=6/10 attempt=1 azimuth=145.47° elevation=47.81° distance=0.687 obstacle_check=True
+[CAMERA] accepted 6/10
+[CAMERA] pose=7/10 attempt=1 azimuth=106.95° elevation=38.09° distance=0.775 obstacle_check=True
+[CAMERA] accepted 7/10
+[CAMERA] pose=8/10 attempt=1 azimuth=-109.04° elevation=34.25° distance=0.709 obstacle_check=True
+[CAMERA] accepted 8/10
+[CAMERA] pose=9/10 attempt=1 azimuth=-143.44° elevation=43.62° distance=0.763 obstacle_check=True
+[CAMERA] accepted 9/10
+[CAMERA] pose=10/10 attempt=1 azimuth=-179.67° elevation=36.49° distance=0.735 obstacle_check=True
+[CAMERA] accepted 10/10
+[CAMERA] Successfully generated exactly 10 camera poses.
+[SCENE 1] Rendering 10 camera poses (requested 10, 360° horizontal coverage)
+Warning! Detected output entries with duplicate keys and paths
+Rendering 10 frames of colors, depth...

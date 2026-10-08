@@ -10,3 +10,4 @@ bop/BlenderProc/distractor_objs
 bop/BlenderProc/distractor_store
 
 .venv/
+.venv_blender5/
