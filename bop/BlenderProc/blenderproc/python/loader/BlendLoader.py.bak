@@ -142,22 +142,24 @@ class _BlendLoader:
 
     @staticmethod
     def purge_added_orphans(orphans_before, data_to):
-        """Removes orphan datablocks added by the blend loader."""
+        """ Removes all orphans that did not exists before loading the blend file.
+
+        :param orphans_before: A dict of sets containing orphans of all kind of data_blocks that existed before
+                               loading the blend file.
+        :param data_to: The list of objects that were loaded on purpose and should not be removed, even when
+                        they are orphans.
+        """
         purge_orphans = True
         while purge_orphans:
             purge_orphans = False
             orphans_after = collect_all_orphan_data_blocks()
-
+            # Go over all data_block types
             for collection_name, orphan_block in orphans_after.items():
-                before = orphans_before.get(collection_name, set())
-                data_collection = getattr(data_to, collection_name, None)
-
-                for orphan in orphan_block.difference(before):
-                    if data_collection is not None and orphan in data_collection:
-                        continue
-
-                    collection = getattr(bpy.data, collection_name, None)
-                    remove = getattr(collection, "remove", None)
-                    if callable(remove):
-                        remove(orphan)
+                # Go over all orphans of that type that were added due to this loader
+                for orphan in orphan_block.difference(orphans_before[collection_name]):
+                    # Check whether this orphan was loaded on purpose
+                    if orphan not in getattr(data_to, collection_name):
+                        # Remove the orphan
+                        getattr(bpy.data, collection_name).remove(orphan)
+                        # Make sure to run the loop again, so we can detect newly created orphans
                         purge_orphans = True

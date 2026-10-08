@@ -15,6 +15,12 @@ except Exception:
 
 ENV_NAME = "Data_Generation"
 REQUIREMENTS_PATH = "requirements.txt"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+BLENDER_CONFIG = {
+    "python": os.path.join(BASE_DIR, ".venv_blender5", "bin", "python"),
+    "blender": "/home/yeo/Downloads/blender-5.2.1-linux-x64",
+}
 
 DEFAULTS = {
     "output_dir": "",
@@ -32,10 +38,10 @@ class DataGenerationGUI:
         self.worker_thread = None
         self.worker_process = None
         self.blend_files = []
+        self.base_dir = BASE_DIR
         self.target_python = sys.executable
-        self.base_dir = os.path.dirname(os.path.abspath(__file__))
 
-        print(f"[INFO] Using python: {self.target_python}")
+        print(f"[INFO] GUI python: {self.target_python}")
 
         self._build_ui()
         self.root.after(100, self._poll_logs)
@@ -45,7 +51,8 @@ class DataGenerationGUI:
         top.pack(fill="both", expand=True)
 
         ttk.Label(
-            top, text="Data Generation",
+            top,
+            text="Data Generation",
             font=("Arial", 18, "bold")
         ).pack(anchor="w", pady=(0, 10))
 
@@ -55,8 +62,12 @@ class DataGenerationGUI:
         path_box.columnconfigure(1, weight=1)
         path_box.pack(fill="x", pady=8)
 
-        self.output_dir_var = tk.StringVar(value=DEFAULTS["output_dir"])
-        self._add_path_row(path_box, 0, "Output Dir", self.output_dir_var)
+        self.output_dir_var = tk.StringVar(
+            value=DEFAULTS["output_dir"]
+        )
+        self._add_path_row(
+            path_box, 0, "Output Dir", self.output_dir_var
+        )
 
         blend_row = ttk.Frame(path_box)
         blend_row.grid(
@@ -64,14 +75,17 @@ class DataGenerationGUI:
             sticky="ew", pady=5
         )
 
-        ttk.Label(blend_row, text=".blend Files").pack(
-            side="left", padx=(0, 8)
-        )
+        ttk.Label(
+            blend_row,
+            text=".blend Files"
+        ).pack(side="left", padx=(0, 8))
+
         ttk.Button(
             blend_row,
             text="Select .blend Files",
             command=self._select_blend_files
         ).pack(side="left", padx=4)
+
         ttk.Button(
             blend_row,
             text="Clear Selection",
@@ -90,7 +104,11 @@ class DataGenerationGUI:
             sticky="w", pady=(5, 0)
         )
 
-        self.blend_list = tk.Listbox(path_box, height=6, width=120)
+        self.blend_list = tk.Listbox(
+            path_box,
+            height=6,
+            width=120
+        )
         self.blend_list.grid(
             row=3, column=0, columnspan=3,
             sticky="ew", pady=(8, 0)
@@ -116,11 +134,30 @@ class DataGenerationGUI:
             gen_box, 1, "Sample Size", self.sample_size_var
         )
 
+        ttk.Label(
+            gen_box,
+            text="Blender Version"
+        ).grid(
+            row=2, column=0,
+            sticky="w",
+            padx=(0, 8),
+            pady=5
+        )
+
+        ttk.Label(
+            gen_box,
+            text="Blender 5.2.1"
+        ).grid(
+            row=2, column=1,
+            sticky="w",
+            pady=5
+        )
+
         cpu_box = ttk.LabelFrame(
             gen_box, text="CPU Usage", padding=8
         )
         cpu_box.grid(
-            row=2, column=0, columnspan=2,
+            row=3, column=0, columnspan=2,
             sticky="ew", pady=(8, 5)
         )
 
@@ -149,17 +186,20 @@ class DataGenerationGUI:
         btn_box.pack(fill="x", pady=8)
 
         ttk.Button(
-            btn_box, text="Start",
+            btn_box,
+            text="Start",
             command=self._start_generation
         ).pack(side="left", padx=4)
 
         ttk.Button(
-            btn_box, text="Stop",
+            btn_box,
+            text="Stop",
             command=self._stop_generation
         ).pack(side="left", padx=4)
 
         ttk.Button(
-            btn_box, text="Clear Log",
+            btn_box,
+            text="Clear Log",
             command=self._clear_log
         ).pack(side="left", padx=4)
 
@@ -169,7 +209,9 @@ class DataGenerationGUI:
         log_box.pack(fill="both", expand=True, pady=8)
 
         self.console = scrolledtext.ScrolledText(
-            log_box, height=18, font=("Courier", 10)
+            log_box,
+            height=18,
+            font=("Courier", 10)
         )
         self.console.pack(fill="both", expand=True)
         self.console.insert("end", "GUI started.\n")
@@ -177,38 +219,58 @@ class DataGenerationGUI:
 
     def _add_text_row(self, parent, row, label, variable):
         ttk.Label(
-            parent, text=label
+            parent,
+            text=label
         ).grid(
-            row=row, column=0,
-            sticky="w", padx=(0, 8), pady=5
+            row=row,
+            column=0,
+            sticky="w",
+            padx=(0, 8),
+            pady=5
         )
+
         ttk.Entry(
-            parent, textvariable=variable, width=70
+            parent,
+            textvariable=variable,
+            width=70
         ).grid(
-            row=row, column=1,
-            sticky="w", pady=5
+            row=row,
+            column=1,
+            sticky="w",
+            pady=5
         )
 
     def _add_path_row(self, parent, row, label, variable):
         ttk.Label(
-            parent, text=label
+            parent,
+            text=label
         ).grid(
-            row=row, column=0,
-            sticky="w", padx=(0, 8), pady=5
+            row=row,
+            column=0,
+            sticky="w",
+            padx=(0, 8),
+            pady=5
         )
+
         ttk.Entry(
-            parent, textvariable=variable
+            parent,
+            textvariable=variable
         ).grid(
-            row=row, column=1,
-            sticky="ew", pady=5
+            row=row,
+            column=1,
+            sticky="ew",
+            pady=5
         )
+
         ttk.Button(
             parent,
             text="Browse",
             command=lambda: self._browse_folder(variable)
         ).grid(
-            row=row, column=2,
-            padx=6, pady=5
+            row=row,
+            column=2,
+            padx=6,
+            pady=5
         )
 
     def _browse_folder(self, variable):
@@ -224,6 +286,7 @@ class DataGenerationGUI:
                 ("All files", "*.*")
             ]
         )
+
         if not files:
             return
 
@@ -242,7 +305,9 @@ class DataGenerationGUI:
         self.blend_list.delete(0, tk.END)
 
         if not self.blend_files:
-            self.blend_info_var.set("No .blend files selected")
+            self.blend_info_var.set(
+                "No .blend files selected"
+            )
             return
 
         self.blend_info_var.set(
@@ -250,7 +315,10 @@ class DataGenerationGUI:
         )
 
         for file_path in self.blend_files:
-            self.blend_list.insert(tk.END, file_path)
+            self.blend_list.insert(
+                tk.END,
+                file_path
+            )
 
     def _validate_inputs(self):
         errors = []
@@ -259,7 +327,9 @@ class DataGenerationGUI:
             errors.append("Output Dir is required")
 
         if not self.blend_files:
-            errors.append("Please select at least one .blend file")
+            errors.append(
+                "Please select at least one .blend file"
+            )
 
         for field_name, value in [
             ("num_scenes", self.num_scenes_var.get()),
@@ -267,14 +337,35 @@ class DataGenerationGUI:
         ]:
             try:
                 value_int = int(value)
+
                 if value_int <= 0:
-                    errors.append(f"{field_name} must be greater than 0")
+                    errors.append(
+                        f"{field_name} must be greater than 0"
+                    )
             except Exception:
-                errors.append(f"{field_name} must be an integer")
+                errors.append(
+                    f"{field_name} must be an integer"
+                )
 
         for file_path in self.blend_files:
             if not file_path.lower().endswith(".blend"):
-                errors.append(f"Invalid file selected: {file_path}")
+                errors.append(
+                    f"Invalid file selected: {file_path}"
+                )
+
+        if not os.path.isfile(
+            os.path.join(BLENDER_CONFIG["blender"], "blender")
+        ):
+            errors.append(
+                f"Blender executable not found: "
+                f"{os.path.join(BLENDER_CONFIG['blender'], 'blender')}"
+            )
+
+        if not os.path.isfile(BLENDER_CONFIG["python"]):
+            errors.append(
+                f"Python environment not found: "
+                f"{BLENDER_CONFIG['python']}"
+            )
 
         if errors:
             messagebox.showerror(
@@ -284,22 +375,42 @@ class DataGenerationGUI:
             return False
 
         dataset_path = os.path.join(
-            self.base_dir, "bop", "BlenderProc", "hb"
+            self.base_dir,
+            "bop",
+            "BlenderProc",
+            "hb"
         )
-        hb_models_dir = os.path.join(dataset_path, "models")
+
+        hb_models_dir = os.path.join(
+            dataset_path,
+            "models"
+        )
+
         temp_dir = os.path.join(
-            self.base_dir, "bop", "BlenderProc", "temp"
+            self.base_dir,
+            "bop",
+            "BlenderProc",
+            "temp"
         )
 
         try:
-            os.makedirs(hb_models_dir, exist_ok=True)
+            os.makedirs(
+                hb_models_dir,
+                exist_ok=True
+            )
 
             for fname in os.listdir(hb_models_dir):
                 if fname.lower().endswith(".blend"):
-                    fpath = os.path.join(hb_models_dir, fname)
+                    fpath = os.path.join(
+                        hb_models_dir,
+                        fname
+                    )
+
                     try:
                         os.remove(fpath)
-                        self._log(f"Removed old blend: {fname}")
+                        self._log(
+                            f"Removed old blend: {fname}"
+                        )
                     except Exception as e:
                         self._log(
                             f"Failed to remove old blend "
@@ -308,28 +419,44 @@ class DataGenerationGUI:
 
             for blend_file in self.blend_files:
                 filename = os.path.basename(blend_file)
+
                 dest_path = os.path.join(
-                    hb_models_dir, filename
+                    hb_models_dir,
+                    filename
                 )
-                shutil.copy2(blend_file, dest_path)
+
+                shutil.copy2(
+                    blend_file,
+                    dest_path
+                )
+
                 self._log(
                     f"Copied: {filename} -> {hb_models_dir}"
                 )
 
             self._log(
-                f"All .blend files copied to {hb_models_dir}"
+                f"All .blend files copied to "
+                f"{hb_models_dir}"
             )
 
             temp_camera_path = os.path.join(
-                temp_dir, "camera.json"
+                temp_dir,
+                "camera.json"
             )
+
             camera_path = os.path.join(
-                dataset_path, "camera_primesense.json"
+                dataset_path,
+                "camera_primesense.json"
             )
 
             if os.path.exists(temp_camera_path):
-                shutil.copy2(temp_camera_path, camera_path)
-                self._log("Copied camera.json from temp")
+                shutil.copy2(
+                    temp_camera_path,
+                    camera_path
+                )
+                self._log(
+                    "Copied camera.json from temp"
+                )
             else:
                 default_camera = {
                     "fx": 572.4114,
@@ -340,17 +467,29 @@ class DataGenerationGUI:
                     "height": 480,
                     "depth_scale": 0.001
                 }
-                with open(camera_path, "w") as f:
-                    json.dump(default_camera, f, indent=2)
+
+                with open(
+                    camera_path,
+                    "w"
+                ) as f:
+                    json.dump(
+                        default_camera,
+                        f,
+                        indent=2
+                    )
+
                 self._log(
                     "Created default camera_primesense.json"
                 )
 
             temp_targets_path = os.path.join(
-                temp_dir, "test_targets_bop19.json"
+                temp_dir,
+                "test_targets_bop19.json"
             )
+
             targets_path = os.path.join(
-                dataset_path, "test_targets_bop19.json"
+                dataset_path,
+                "test_targets_bop19.json"
             )
 
             if os.path.exists(temp_targets_path):
@@ -358,19 +497,28 @@ class DataGenerationGUI:
                     temp_targets_path,
                     targets_path
                 )
+
                 self._log(
                     "Copied test_targets_bop19.json from temp"
                 )
             else:
                 default_targets = [
-                    {"obj_id": 1, "inst_count": 1}
+                    {
+                        "obj_id": 1,
+                        "inst_count": 1
+                    }
                 ]
-                with open(targets_path, "w") as f:
+
+                with open(
+                    targets_path,
+                    "w"
+                ) as f:
                     json.dump(
                         default_targets,
                         f,
                         indent=2
                     )
+
                 self._log(
                     "Created default test_targets_bop19.json"
                 )
@@ -380,18 +528,30 @@ class DataGenerationGUI:
                 "File Setup Error",
                 f"Failed to setup dataset: {exc}"
             )
-            self._log(f"Dataset setup error: {exc}")
+
+            self._log(
+                f"Dataset setup error: {exc}"
+            )
+
             return False
 
-        self._log("Input validation passed")
+        self._log(
+            "Input validation passed"
+        )
+
         return True
 
     def _start_generation(self):
         if not self._validate_inputs():
             return
 
-        if self.worker_thread and self.worker_thread.is_alive():
-            self._log("A task is already running")
+        if (
+            self.worker_thread
+            and self.worker_thread.is_alive()
+        ):
+            self._log(
+                "A task is already running"
+            )
             return
 
         self._log("=" * 60)
@@ -402,6 +562,7 @@ class DataGenerationGUI:
             target=self._worker_main,
             daemon=True
         )
+
         self.worker_thread.start()
 
     def _worker_main(self):
@@ -427,50 +588,75 @@ class DataGenerationGUI:
                 "bop",
                 "BlenderProc"
             )
+
             textures_path = os.path.join(
                 bop_parent_path,
                 "backgrounds"
             )
+
             dataset_name = "hb"
+
             output_dir_abs = os.path.abspath(
                 self.output_dir_var.get().strip()
             )
 
-            if not os.path.isdir(bop_parent_path):
+            if not os.path.isdir(
+                bop_parent_path
+            ):
                 self._log(
                     f"BOP parent path not found: "
                     f"{bop_parent_path}"
                 )
                 return
 
-            if not os.path.isdir(
-                os.path.join(bop_parent_path, dataset_name)
-            ):
+            dataset_dir = os.path.join(
+                bop_parent_path,
+                dataset_name
+            )
+
+            if not os.path.isdir(dataset_dir):
                 self._log(
                     f"Dataset folder not found: "
-                    f"{os.path.join(bop_parent_path, dataset_name)}"
+                    f"{dataset_dir}"
                 )
                 return
 
             if not os.path.isdir(textures_path):
                 self._log(
-                    f"Textures path not found: {textures_path}"
+                    f"Textures path not found: "
+                    f"{textures_path}"
                 )
                 return
 
-            os.makedirs(output_dir_abs, exist_ok=True)
-
-            venv_bin = os.path.dirname(self.target_python)
-            blenderproc_exe = os.path.join(
-                venv_bin, "blenderproc"
+            os.makedirs(
+                output_dir_abs,
+                exist_ok=True
             )
 
-            if not os.path.exists(blenderproc_exe):
+            venv_bin = os.path.dirname(
+                BLENDER_CONFIG["python"]
+            )
+
+            blenderproc_exe = os.path.join(
+                venv_bin,
+                "blenderproc"
+            )
+
+            if not os.path.isfile(
+                blenderproc_exe
+            ):
                 self._log(
                     "Cannot find blenderproc executable:"
                 )
-                self._log(blenderproc_exe)
+                self._log(
+                    blenderproc_exe
+                )
                 return
+
+            blender_exe = os.path.join(
+                BLENDER_CONFIG["blender"],
+                "blender"
+            )
 
             cpu_mode = self.cpu_mode_var.get()
 
@@ -499,14 +685,42 @@ class DataGenerationGUI:
                 ):
                     env[name] = str(cpu_threads)
 
-                env["BLENDER_THREADS"] = str(cpu_threads)
+                env["BLENDER_THREADS"] = str(
+                    cpu_threads
+                )
                 env["PHYSICS_SUBSTEPS"] = str(
                     physics_substeps
                 )
                 env["PHYSICS_SOLVER_ITERS"] = str(
                     physics_solver_iters
                 )
+            else:
+                env.pop(
+                    "BLENDER_THREADS",
+                    None
+                )
+                env.pop(
+                    "PHYSICS_SUBSTEPS",
+                    None
+                )
+                env.pop(
+                    "PHYSICS_SOLVER_ITERS",
+                    None
+                )
 
+            self._log(
+                "[Blender] Blender 5.2.1"
+            )
+
+            self._log(
+                f"[Blender path] {blender_exe}"
+            )
+
+            self._log(
+                f"[BlenderProc] {blenderproc_exe}"
+            )
+
+            if cpu_threads is not None:
                 self._log(
                     f"[CPU] Mode: {cpu_mode}, "
                     f"threads={cpu_threads}, "
@@ -514,19 +728,15 @@ class DataGenerationGUI:
                     f"{physics_solver_iters}"
                 )
             else:
-                env.pop("BLENDER_THREADS", None)
-                env.pop("PHYSICS_SUBSTEPS", None)
-                env.pop("PHYSICS_SOLVER_ITERS", None)
-
-                self._log("[CPU] Mode: normal")
-
-            self._log(
-                f"Using BlenderProc: {blenderproc_exe}"
-            )
+                self._log(
+                    "[CPU] Mode: normal"
+                )
 
             cmd = [
                 blenderproc_exe,
                 "run",
+                "--custom-blender-path",
+                BLENDER_CONFIG["blender"],
                 script_path,
                 bop_parent_path,
                 dataset_name,
@@ -556,6 +766,7 @@ class DataGenerationGUI:
             if self.worker_process.stdout:
                 for line in self.worker_process.stdout:
                     line = line.rstrip()
+
                     if line:
                         self._log(line)
 
@@ -567,7 +778,9 @@ class DataGenerationGUI:
             )
 
         except Exception as exc:
-            self._log(f"Worker error: {exc}")
+            self._log(
+                f"Worker error: {exc}"
+            )
 
         finally:
             self.worker_process = None
@@ -576,16 +789,29 @@ class DataGenerationGUI:
         if self.worker_process:
             try:
                 self.worker_process.terminate()
-                self._log("Process terminate requested")
+                self._log(
+                    "Process terminate requested"
+                )
             except Exception as exc:
-                self._log(f"Stop error: {exc}")
+                self._log(
+                    f"Stop error: {exc}"
+                )
         else:
-            self._log("No active process to stop")
+            self._log(
+                "No active process to stop"
+            )
 
     def _clear_log(self):
-        self.console.configure(state="normal")
-        self.console.delete("1.0", "end")
-        self.console.configure(state="disabled")
+        self.console.configure(
+            state="normal"
+        )
+        self.console.delete(
+            "1.0",
+            "end"
+        )
+        self.console.configure(
+            state="disabled"
+        )
 
     def _log(self, text):
         self.log_queue.put(text)
@@ -594,14 +820,25 @@ class DataGenerationGUI:
         try:
             while True:
                 line = self.log_queue.get_nowait()
-                self.console.configure(state="normal")
-                self.console.insert("end", line + "\n")
+
+                self.console.configure(
+                    state="normal"
+                )
+                self.console.insert(
+                    "end",
+                    line + "\n"
+                )
                 self.console.see("end")
-                self.console.configure(state="disabled")
+                self.console.configure(
+                    state="disabled"
+                )
         except queue.Empty:
             pass
 
-        self.root.after(100, self._poll_logs)
+        self.root.after(
+            100,
+            self._poll_logs
+        )
 
 
 def main():

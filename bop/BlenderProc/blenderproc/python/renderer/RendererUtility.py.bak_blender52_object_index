@@ -568,7 +568,7 @@ def enable_segmentation_output(map_by: Union[str, List[str]] = "category_id",
         combine_color.mode = "HSV"
 
         links.new(
-            render_layer_node.outputs["Object Index"],
+            render_layer_node.outputs["IndexOB"],
             combine_color.inputs["Value"]
         )
         links.new(
@@ -592,7 +592,7 @@ def enable_segmentation_output(map_by: Union[str, List[str]] = "category_id",
         combine_color.mode = "HSV"
 
         links.new(
-            render_layer_node.outputs["Object Index"],
+            render_layer_node.outputs["IndexOB"],
             combine_color.inputs[2]
         )
         links.new(

@@ -1,0 +1,23 @@
+Metadata-Version: 2.4
+Name: blenderproc
+Version: 2.8.0
+Home-page: https://github.com/DLR-RM/BlenderProc
+Author: Maximilian Denninger, Dominik Winkelbauer, Martin Sundermeyer
+Maintainer: Dominik Winkelbauer
+Description-Content-Type: text/markdown
+Requires-Dist: setuptools
+Requires-Dist: pyyaml
+Requires-Dist: requests
+Requires-Dist: matplotlib
+Requires-Dist: numpy
+Requires-Dist: Pillow
+Requires-Dist: h5py
+Requires-Dist: progressbar
+Dynamic: author
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: maintainer
+Dynamic: requires-dist
+
+# BlenderProc 2.8.0

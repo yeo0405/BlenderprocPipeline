@@ -551,25 +551,9 @@ class MeshObject(Entity):
         # Known issue: https://projects.blender.org/blender/blender/issues/117399
 
         # The datafiles are expected to be in the same folder relative to blender's python binary.
-        if bpy.app.version >= (5, 0, 0):
-            path = (
-                Path(bpy.utils.resource_path('LOCAL'))
-                / "datafiles"
-                / "assets"
-                / "nodes"
-                / "geometry_nodes_essentials.blend"
-            )
-        else:
-            path = (
-                Path(bpy.utils.resource_path('LOCAL'))
-                / "datafiles"
-                / "assets"
-                / "geometry_nodes"
-                / "smooth_by_angle.blend"
-            )
-
+        path = Path(bpy.utils.resource_path('LOCAL')) / "datafiles" / "assets" / "geometry_nodes" / "smooth_by_angle.blend"
         if not path.exists():
-            raise RuntimeError(f"Could not find the Smooth by Angle asset at {path}")
+            raise RuntimeError(f"Could not find the path to the 'ESSENTIALS' asset folder expected at {path}")
         
         # Get the node group from the current file (reuse if it exists), otherwise load it from the
         # precalculated path and append to the current .blend.
@@ -584,7 +568,7 @@ class MeshObject(Entity):
         modifier = None
         for existing_mod in self.get_modifiers():
             if existing_mod.type == 'NODES' and existing_mod.node_group == existing_node_group:
-                modifier = existing_mod
+                modifier = modifier
                 break
         
         # Create a new modifier if no existing modifier was found
@@ -593,11 +577,7 @@ class MeshObject(Entity):
             modifier.node_group = existing_node_group
 
         modifier = self.get_modifier("Smooth by Angle")
-        if bpy.app.version >= (5, 2, 0):
-            modifier.properties.inputs.Input_1.value = np.deg2rad(float(angle))
-        else:
-            modifier["Input_1"] = np.deg2rad(float(angle))
-
+        modifier["Input_1"] = np.deg2rad(float(angle))
         return modifier
 
     def mesh_as_trimesh(self) -> Trimesh:

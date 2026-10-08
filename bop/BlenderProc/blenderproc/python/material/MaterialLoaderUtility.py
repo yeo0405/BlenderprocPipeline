@@ -271,26 +271,44 @@ def add_normal(nodes: bpy.types.Nodes, links: bpy.types.NodeLinks, normal_image_
                                            normal_y_value)
         if invert_y_channel:
 
-            separate_rgba = nodes.new('ShaderNodeSeparateRGB')
+            separate_rgba = nodes.new(
+                "ShaderNodeSeparateColor" if bpy.app.version >= (5, 0, 0)
+                else "ShaderNodeSeparateRGB"
+            )
             separate_rgba.location.x = 4.0 / 5.0 * _x_texture_node
             separate_rgba.location.y = normal_y_value
-            links.new(normal_texture.outputs["Color"], separate_rgba.inputs["Image"])
+
+            if bpy.app.version >= (5, 0, 0):
+                links.new(normal_texture.outputs["Color"], separate_rgba.inputs["Color"])
+                red_output, green_output, blue_output = "Red", "Green", "Blue"
+            else:
+                links.new(normal_texture.outputs["Color"], separate_rgba.inputs["Image"])
+                red_output, green_output, blue_output = "R", "G", "B"
 
             invert_node = nodes.new("ShaderNodeInvert")
             invert_node.inputs["Fac"].default_value = 1.0
             invert_node.location.x = 3.0 / 5.0 * _x_texture_node
             invert_node.location.y = normal_y_value
 
-            links.new(separate_rgba.outputs["G"], invert_node.inputs["Color"])
+            links.new(separate_rgba.outputs[green_output], invert_node.inputs["Color"])
 
-            combine_rgba = nodes.new('ShaderNodeCombineRGB')
+            combine_rgba = nodes.new(
+                "ShaderNodeCombineColor" if bpy.app.version >= (5, 0, 0)
+                else "ShaderNodeCombineRGB"
+            )
             combine_rgba.location.x = 2.0 / 5.0 * _x_texture_node
             combine_rgba.location.y = normal_y_value
-            links.new(separate_rgba.outputs["R"], combine_rgba.inputs["R"])
-            links.new(invert_node.outputs["Color"], combine_rgba.inputs["G"])
-            links.new(separate_rgba.outputs["B"], combine_rgba.inputs["B"])
 
-            current_output = combine_rgba.outputs["Image"]
+            if bpy.app.version >= (5, 0, 0):
+                red_input, green_input, blue_input = "Red", "Green", "Blue"
+            else:
+                red_input, green_input, blue_input = "R", "G", "B"
+
+            links.new(separate_rgba.outputs[red_output], combine_rgba.inputs[red_input])
+            links.new(invert_node.outputs["Color"], combine_rgba.inputs[green_input])
+            links.new(separate_rgba.outputs[blue_output], combine_rgba.inputs[blue_input])
+
+            current_output = combine_rgba.outputs["Color" if bpy.app.version >= (5, 0, 0) else "Image"]
         else:
             current_output = normal_texture.outputs["Color"]
 

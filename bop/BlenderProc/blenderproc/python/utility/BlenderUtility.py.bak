@@ -151,34 +151,6 @@ def load_image(file_path: str, num_channels: int = 3) -> np.ndarray:
     :return: The numpy array
     """
     file_ending = file_path[file_path.rfind(".") + 1:].lower()
-    if file_ending == "exr" and bpy.app.version >= (5, 0, 0):
-        try:
-            import OpenEXR
-
-            exr = OpenEXR.File(file_path)
-            part = exr.parts[0]
-            channels = part.channels
-
-            if len(channels) == 1:
-                pixels = next(iter(channels.values())).pixels
-            elif "Depth" in channels:
-                pixels = channels["Depth"].pixels
-            else:
-                pixels = np.stack(
-                    [channels[name].pixels for name in sorted(channels.keys())],
-                    axis=-1
-                )
-
-            if pixels.ndim == 2:
-                pixels = pixels[:, :, np.newaxis]
-
-            return pixels[:, :, :num_channels]
-
-        except Exception as e:
-            raise RuntimeError(
-                f"Failed to read Blender 5.x EXR file: {file_path}: {e}"
-            ) from e
-
     if file_ending in ["exr", "png"]:
         try:
             return imageio.v3.imread(file_path, plugin='opencv', flags=cv2.IMREAD_UNCHANGED)[:, :, :num_channels]
